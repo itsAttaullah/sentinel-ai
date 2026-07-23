@@ -67,6 +67,7 @@ Sentinel AI turns agent execution into structured telemetry, reproducible benchm
 | [docs/architecture/09-trace-schema-v1.md](./docs/architecture/09-trace-schema-v1.md) | Trace schema reference (v1) |
 | [packages/schema/](./packages/schema/) | JSON Schema, fixtures, OpenAPI stubs |
 | [packages/sdk-python/](./packages/sdk-python/) | Python instrumentation SDK |
+| [apps/server/](./apps/server/) | Ingest API + Postgres control plane |
 | [examples/hello-trace/](./examples/hello-trace/) | File-export quickstart |
 | [docs/adr/](./docs/adr/) | Architecture Decision Records |
 | [docs/diagrams/](./docs/diagrams/) | Mermaid architecture diagrams |
@@ -76,20 +77,25 @@ Sentinel AI turns agent execution into structured telemetry, reproducible benchm
 
 ## Status
 
-**Phase 2 — Python SDK (complete on branch `feat/python-sdk`)**
+**Phase 3 — Ingest & Store (complete on branch `feat/ingest-store`)**
 
-- Schema contracts: [`packages/schema`](./packages/schema/)
+- Schema: [`packages/schema`](./packages/schema/)
 - Python SDK: [`packages/sdk-python`](./packages/sdk-python/)
-- Quickstart example: [`examples/hello-trace`](./examples/hello-trace/)
+- Server: [`apps/server`](./apps/server/)
+- Example: [`examples/hello-trace`](./examples/hello-trace/)
 
-Architecture proposal remains in [`docs/`](./docs/).
+### Quickstart (local stack)
 
-### Quickstart
+```powershell
+docker compose up --build
+```
 
 ```powershell
 pip install -e .\packages\sdk-python
 python .\examples\hello-trace\main.py
 ```
+
+Then POST a batch (or point `HttpExporter` at `http://localhost:8080/v1/ingest`).
 
 ---
 

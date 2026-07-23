@@ -86,25 +86,24 @@ server ✗→ web
 
 ---
 
-## 5. What Exists After Phase 2
+## 5. What Exists After Phase 3
 
 ```text
 sentinel-ai/
 ├── README.md
 ├── ROADMAP.md
+├── docker-compose.yml
 ├── packages/
-│   ├── schema/          # JSON Schema v1, fixtures, OpenAPI stub
-│   └── sdk-python/      # Python instrumentation SDK
+│   ├── schema/
+│   └── sdk-python/
+├── apps/
+│   └── server/          # FastAPI ingest + control plane
 ├── examples/
-│   └── hello-trace/     # file-export quickstart
+│   └── hello-trace/
 └── docs/
-    ├── architecture/
-    ├── adr/
-    ├── diagrams/
-    └── phases/
 ```
 
-Server and UI packages appear in later phases.
+UI, metrics workers, and eval packages appear in later phases.
 
 ---
 

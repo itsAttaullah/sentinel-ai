@@ -1,0 +1,9 @@
+.git
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.venv
+**/venv
+**/node_modules
+**/*.egg-info
+examples/hello-trace/out/*.jsonl

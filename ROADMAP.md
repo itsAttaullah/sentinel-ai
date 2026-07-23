@@ -39,7 +39,7 @@ Publish JSON Schema for runs/spans/events; define compatibility policy; stub Ope
 
 Implement tracer APIs, context propagation, async export client (can target mock/file sink before live server), hello-trace example.
 
-### Phase 3 — Ingest & Store
+### Phase 3 — Ingest & Store *(complete)*
 
 FastAPI ingest + project APIs; Postgres models; idempotent upserts; Docker Compose; quarantine for invalid batches.
 
