@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sentinel-ai.dev/schema/v1/event.schema.json",
+  "title": "SentinelEvent",
+  "description": "A point-in-time signal within a run (retry, error, log, checkpoint, feedback).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project_id",
+    "run_id",
+    "event_id",
+    "type",
+    "timestamp"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "project_id": {
+      "$ref": "common.schema.json#/$defs/idString"
+    },
+    "run_id": {
+      "$ref": "common.schema.json#/$defs/idString"
+    },
+    "event_id": {
+      "$ref": "common.schema.json#/$defs/idString"
+    },
+    "span_id": {
+      "$ref": "common.schema.json#/$defs/idString",
+      "description": "Optional associated span."
+    },
+    "type": {
+      "$ref": "common.schema.json#/$defs/eventType"
+    },
+    "timestamp": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "message": {
+      "type": "string",
+      "maxLength": 8192
+    },
+    "level": {
+      "type": "string",
+      "enum": ["debug", "info", "warn", "error"]
+    },
+    "tags": {
+      "$ref": "common.schema.json#/$defs/tags"
+    },
+    "attributes": {
+      "$ref": "common.schema.json#/$defs/attributes"
+    },
+    "error": {
+      "$ref": "common.schema.json#/$defs/errorInfo"
+    }
+  }
+}
