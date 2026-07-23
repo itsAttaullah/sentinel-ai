@@ -35,7 +35,7 @@ Produce product vision, requirements, HLD, ADRs, diagrams, repo plan, and this r
 
 Publish JSON Schema for runs/spans/events; define compatibility policy; stub OpenAPI for ingest/control plane; golden fixtures.
 
-### Phase 2 — Python SDK
+### Phase 2 — Python SDK *(complete)*
 
 Implement tracer APIs, context propagation, async export client (can target mock/file sink before live server), hello-trace example.
 

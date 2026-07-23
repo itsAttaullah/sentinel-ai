@@ -66,6 +66,8 @@ Sentinel AI turns agent execution into structured telemetry, reproducible benchm
 | [docs/architecture/08-risks-and-tradeoffs.md](./docs/architecture/08-risks-and-tradeoffs.md) | Risks and trade-offs |
 | [docs/architecture/09-trace-schema-v1.md](./docs/architecture/09-trace-schema-v1.md) | Trace schema reference (v1) |
 | [packages/schema/](./packages/schema/) | JSON Schema, fixtures, OpenAPI stubs |
+| [packages/sdk-python/](./packages/sdk-python/) | Python instrumentation SDK |
+| [examples/hello-trace/](./examples/hello-trace/) | File-export quickstart |
 | [docs/adr/](./docs/adr/) | Architecture Decision Records |
 | [docs/diagrams/](./docs/diagrams/) | Mermaid architecture diagrams |
 | [docs/phases/](./docs/phases/) | Per-phase scope notes |
@@ -74,11 +76,20 @@ Sentinel AI turns agent execution into structured telemetry, reproducible benchm
 
 ## Status
 
-**Phase 1 — Schema & Contracts (complete on branch `feat/schema-contracts`)**
+**Phase 2 — Python SDK (complete on branch `feat/python-sdk`)**
 
-Canonical trace schema v1.0.0, golden fixtures, versioning policy, and OpenAPI stubs live under [`packages/schema`](./packages/schema/).
+- Schema contracts: [`packages/schema`](./packages/schema/)
+- Python SDK: [`packages/sdk-python`](./packages/sdk-python/)
+- Quickstart example: [`examples/hello-trace`](./examples/hello-trace/)
 
-Architecture proposal (Phase 0) remains in [`docs/`](./docs/).
+Architecture proposal remains in [`docs/`](./docs/).
+
+### Quickstart
+
+```powershell
+pip install -e .\packages\sdk-python
+python .\examples\hello-trace\main.py
+```
 
 ---
 

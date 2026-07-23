@@ -86,22 +86,25 @@ server ✗→ web
 
 ---
 
-## 5. What Exists After Phase 1
+## 5. What Exists After Phase 2
 
 ```text
 sentinel-ai/
 ├── README.md
 ├── ROADMAP.md
 ├── packages/
-│   └── schema/          # JSON Schema v1, fixtures, OpenAPI stub
+│   ├── schema/          # JSON Schema v1, fixtures, OpenAPI stub
+│   └── sdk-python/      # Python instrumentation SDK
+├── examples/
+│   └── hello-trace/     # file-export quickstart
 └── docs/
-    ├── architecture/    # proposal set + schema reference
+    ├── architecture/
     ├── adr/
     ├── diagrams/
     └── phases/
 ```
 
-SDK, server, and UI packages appear in later phases.
+Server and UI packages appear in later phases.
 
 ---
 
