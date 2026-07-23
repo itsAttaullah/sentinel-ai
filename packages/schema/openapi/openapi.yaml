@@ -2,10 +2,13 @@ openapi: 3.1.0
 info:
   title: Sentinel AI API
   description: |
-    HTTP contract stub for Sentinel AI ingest and control plane.
+    HTTP contract for Sentinel AI ingest and control plane.
 
-    **Status:** Stub only (Phase 1). Routes are not implemented until later phases.
     Trace payloads MUST conform to `packages/schema/jsonschema/v1`.
+
+    **Implementation status:** Ingest, projects, runs, health, and quarantine
+    routes are implemented by `apps/server` (Phase 3). Eval/benchmark routes
+    remain stubs until later phases.
   version: 0.1.0
   contact:
     name: Sentinel AI Maintainers
