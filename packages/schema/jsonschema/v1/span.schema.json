@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sentinel-ai.dev/schema/v1/span.schema.json",
+  "title": "SentinelSpan",
+  "description": "A timed unit of work within a run (LLM call, tool, planner step, memory op, etc.).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project_id",
+    "run_id",
+    "span_id",
+    "kind",
+    "name",
+    "status",
+    "started_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "project_id": {
+      "$ref": "common.schema.json#/$defs/idString"
+    },
+    "run_id": {
+      "$ref": "common.schema.json#/$defs/idString"
+    },
+    "span_id": {
+      "$ref": "common.schema.json#/$defs/idString"
+    },
+    "parent_span_id": {
+      "$ref": "common.schema.json#/$defs/idString"
+    },
+    "trace_id": {
+      "$ref": "common.schema.json#/$defs/idString"
+    },
+    "kind": {
+      "$ref": "common.schema.json#/$defs/spanKind"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "status": {
+      "$ref": "common.schema.json#/$defs/spanStatus"
+    },
+    "started_at": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "ended_at": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "tags": {
+      "$ref": "common.schema.json#/$defs/tags"
+    },
+    "attributes": {
+      "$ref": "common.schema.json#/$defs/attributes"
+    },
+    "error": {
+      "$ref": "common.schema.json#/$defs/errorInfo"
+    },
+    "llm": {
+      "$ref": "common.schema.json#/$defs/llmPayload"
+    },
+    "tool": {
+      "$ref": "common.schema.json#/$defs/toolPayload"
+    },
+    "planner": {
+      "$ref": "common.schema.json#/$defs/plannerPayload"
+    },
+    "memory": {
+      "$ref": "common.schema.json#/$defs/memoryPayload"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "kind": { "const": "llm" } },
+        "required": ["kind"]
+      },
+      "then": {
+        "required": ["llm"]
+      }
+    },
+    {
+      "if": {
+        "properties": { "kind": { "const": "tool" } },
+        "required": ["kind"]
+      },
+      "then": {
+        "required": ["tool"]
+      }
+    },
+    {
+      "if": {
+        "properties": { "status": { "const": "error" } },
+        "required": ["status"]
+      },
+      "then": {
+        "description": "error status SHOULD include error object; not strictly required to allow partial streams."
+      }
+    }
+  ]
+}

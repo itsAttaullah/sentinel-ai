@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sentinel-ai.dev/schema/v1/run.schema.json",
+  "title": "SentinelRun",
+  "description": "A single agent execution attempt (timeline root).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project_id",
+    "run_id",
+    "status",
+    "started_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "project_id": {
+      "$ref": "common.schema.json#/$defs/idString"
+    },
+    "run_id": {
+      "$ref": "common.schema.json#/$defs/idString"
+    },
+    "trace_id": {
+      "$ref": "common.schema.json#/$defs/idString",
+      "description": "Distributed correlation ID. Defaults to run_id when omitted by consumers."
+    },
+    "parent_run_id": {
+      "$ref": "common.schema.json#/$defs/idString",
+      "description": "Optional parent run for multi-agent or nested executions."
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 512,
+      "description": "Human-readable run name or task label."
+    },
+    "agent_name": {
+      "type": "string",
+      "maxLength": 256
+    },
+    "agent_version": {
+      "type": "string",
+      "maxLength": 128,
+      "description": "Logical agent release identifier used for regression comparison."
+    },
+    "config_hash": {
+      "type": "string",
+      "maxLength": 128,
+      "description": "Fingerprint of configuration (model/planner/tools/memory)."
+    },
+    "environment": {
+      "type": "string",
+      "maxLength": 64,
+      "description": "e.g. dev, staging, prod, ci"
+    },
+    "status": {
+      "$ref": "common.schema.json#/$defs/runStatus"
+    },
+    "started_at": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "ended_at": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "tags": {
+      "$ref": "common.schema.json#/$defs/tags"
+    },
+    "attributes": {
+      "$ref": "common.schema.json#/$defs/attributes"
+    },
+    "error": {
+      "$ref": "common.schema.json#/$defs/errorInfo"
+    },
+    "sdk": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Emitter metadata.",
+      "properties": {
+        "name": { "type": "string", "maxLength": 128 },
+        "version": { "type": "string", "maxLength": 64 },
+        "language": { "type": "string", "maxLength": 64 }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": ["succeeded", "failed", "cancelled", "timed_out"]
+          }
+        },
+        "required": ["status"]
+      },
+      "then": {
+        "required": ["ended_at"]
+      }
+    }
+  ]
+}

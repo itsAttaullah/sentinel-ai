@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "project_id": "proj_demo",
+  "run_id": "run_hello_001",
+  "span_id": "span_tool_001",
+  "parent_span_id": "span_agent_root",
+  "kind": "tool",
+  "name": "web_search",
+  "status": "ok",
+  "started_at": "2026-07-23T09:15:31.850Z",
+  "ended_at": "2026-07-23T09:15:32.200Z",
+  "tool": {
+    "tool_name": "web_search",
+    "tool_version": "1",
+    "input": { "query": "Sentinel AI agent observability" },
+    "output": { "results": [{ "title": "Sentinel AI", "url": "https://example.com" }] }
+  }
+}

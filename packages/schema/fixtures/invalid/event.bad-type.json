@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0.0",
+  "project_id": "proj_demo",
+  "run_id": "run_hello_001",
+  "event_id": "evt_bad",
+  "type": "explosion",
+  "timestamp": "2026-07-23T09:15:31.900Z"
+}

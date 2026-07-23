@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sentinel-ai.dev/schema/v1/common.schema.json",
+  "title": "SentinelCommon",
+  "description": "Shared definitions for Sentinel AI trace schema v1.",
+  "$defs": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Trace wire-format version. Must be 1.0.0 for this schema family revision."
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "idString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Opaque ID. UUID strings are recommended."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "RFC 3339 timestamp, preferably UTC with Z suffix."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "maxItems": 64,
+      "uniqueItems": true
+    },
+    "attributes": {
+      "type": "object",
+      "description": "Open extension map. Values SHOULD be JSON-serializable primitives, arrays, or objects.",
+      "additionalProperties": true
+    },
+    "errorInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "message": {
+          "type": "string",
+          "maxLength": 8192
+        },
+        "stack": {
+          "type": "string",
+          "maxLength": 65536
+        },
+        "retriable": {
+          "type": "boolean"
+        }
+      }
+    },
+    "runStatus": {
+      "type": "string",
+      "enum": ["running", "succeeded", "failed", "cancelled", "timed_out"]
+    },
+    "spanStatus": {
+      "type": "string",
+      "enum": ["ok", "error", "unset"]
+    },
+    "spanKind": {
+      "type": "string",
+      "enum": ["llm", "tool", "planner", "memory", "agent", "custom"]
+    },
+    "eventType": {
+      "type": "string",
+      "enum": ["retry", "error", "log", "checkpoint", "feedback", "custom"]
+    },
+    "llmPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider": { "type": "string", "maxLength": 128 },
+        "model": { "type": "string", "maxLength": 256 },
+        "tokens_in": { "type": "integer", "minimum": 0 },
+        "tokens_out": { "type": "integer", "minimum": 0 },
+        "tokens_total": { "type": "integer", "minimum": 0 },
+        "temperature": { "type": "number" },
+        "finish_reason": { "type": "string", "maxLength": 128 },
+        "messages": {
+          "description": "Optional chat-style messages or prompt payload (may be redacted).",
+          "type": ["array", "object", "string", "null"]
+        },
+        "response": {
+          "description": "Optional model response payload (may be redacted).",
+          "type": ["array", "object", "string", "null"]
+        }
+      }
+    },
+    "toolPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tool_name": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "tool_version": { "type": "string", "maxLength": 128 },
+        "input": {
+          "description": "Tool input (may be redacted).",
+          "type": ["object", "array", "string", "number", "boolean", "null"]
+        },
+        "output": {
+          "description": "Tool output (may be redacted).",
+          "type": ["object", "array", "string", "number", "boolean", "null"]
+        }
+      },
+      "required": ["tool_name"]
+    },
+    "plannerPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "planner_name": { "type": "string", "maxLength": 256 },
+        "step_index": { "type": "integer", "minimum": 0 },
+        "plan": {
+          "type": ["object", "array", "string", "null"]
+        }
+      }
+    },
+    "memoryPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "type": "string",
+          "enum": ["read", "write", "delete", "search", "other"]
+        },
+        "store": { "type": "string", "maxLength": 256 },
+        "key": { "type": "string", "maxLength": 1024 },
+        "namespace": { "type": "string", "maxLength": 256 }
+      }
+    }
+  }
+}

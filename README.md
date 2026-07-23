@@ -64,6 +64,8 @@ Sentinel AI turns agent execution into structured telemetry, reproducible benchm
 | [docs/architecture/06-technology-recommendations.md](./docs/architecture/06-technology-recommendations.md) | Stack recommendations |
 | [docs/architecture/07-repository-structure.md](./docs/architecture/07-repository-structure.md) | Monorepo layout |
 | [docs/architecture/08-risks-and-tradeoffs.md](./docs/architecture/08-risks-and-tradeoffs.md) | Risks and trade-offs |
+| [docs/architecture/09-trace-schema-v1.md](./docs/architecture/09-trace-schema-v1.md) | Trace schema reference (v1) |
+| [packages/schema/](./packages/schema/) | JSON Schema, fixtures, OpenAPI stubs |
 | [docs/adr/](./docs/adr/) | Architecture Decision Records |
 | [docs/diagrams/](./docs/diagrams/) | Mermaid architecture diagrams |
 | [docs/phases/](./docs/phases/) | Per-phase scope notes |
@@ -72,9 +74,11 @@ Sentinel AI turns agent execution into structured telemetry, reproducible benchm
 
 ## Status
 
-**Phase 0 — Architecture & Foundations (design only)**
+**Phase 1 — Schema & Contracts (complete on branch `feat/schema-contracts`)**
 
-No runtime code yet. This repository currently holds the architecture proposal, ADRs, diagrams, and roadmap that will guide implementation.
+Canonical trace schema v1.0.0, golden fixtures, versioning policy, and OpenAPI stubs live under [`packages/schema`](./packages/schema/).
+
+Architecture proposal (Phase 0) remains in [`docs/`](./docs/).
 
 ---
 
