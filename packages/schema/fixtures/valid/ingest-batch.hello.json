@@ -1,0 +1,81 @@
+{
+  "schema_version": "1.0.0",
+  "project_id": "proj_demo",
+  "batch_id": "batch_001",
+  "sent_at": "2026-07-23T09:15:33.000Z",
+  "runs": [
+    {
+      "schema_version": "1.0.0",
+      "project_id": "proj_demo",
+      "run_id": "run_hello_001",
+      "name": "answer-user-question",
+      "agent_name": "demo-agent",
+      "agent_version": "0.1.0",
+      "status": "succeeded",
+      "started_at": "2026-07-23T09:15:30.000Z",
+      "ended_at": "2026-07-23T09:15:32.500Z",
+      "tags": ["smoke"]
+    }
+  ],
+  "spans": [
+    {
+      "schema_version": "1.0.0",
+      "project_id": "proj_demo",
+      "run_id": "run_hello_001",
+      "span_id": "span_agent_root",
+      "kind": "agent",
+      "name": "demo-agent",
+      "status": "ok",
+      "started_at": "2026-07-23T09:15:30.000Z",
+      "ended_at": "2026-07-23T09:15:32.500Z"
+    },
+    {
+      "schema_version": "1.0.0",
+      "project_id": "proj_demo",
+      "run_id": "run_hello_001",
+      "span_id": "span_llm_001",
+      "parent_span_id": "span_agent_root",
+      "kind": "llm",
+      "name": "chat.completions",
+      "status": "ok",
+      "started_at": "2026-07-23T09:15:30.100Z",
+      "ended_at": "2026-07-23T09:15:31.800Z",
+      "llm": {
+        "provider": "openai",
+        "model": "gpt-4.1-mini",
+        "tokens_in": 120,
+        "tokens_out": 45
+      }
+    },
+    {
+      "schema_version": "1.0.0",
+      "project_id": "proj_demo",
+      "run_id": "run_hello_001",
+      "span_id": "span_tool_001",
+      "parent_span_id": "span_agent_root",
+      "kind": "tool",
+      "name": "web_search",
+      "status": "ok",
+      "started_at": "2026-07-23T09:15:31.850Z",
+      "ended_at": "2026-07-23T09:15:32.200Z",
+      "tool": {
+        "tool_name": "web_search",
+        "input": { "query": "Sentinel AI" },
+        "output": { "hits": 1 }
+      }
+    }
+  ],
+  "events": [
+    {
+      "schema_version": "1.0.0",
+      "project_id": "proj_demo",
+      "run_id": "run_hello_001",
+      "event_id": "evt_retry_001",
+      "span_id": "span_tool_001",
+      "type": "retry",
+      "timestamp": "2026-07-23T09:15:31.900Z",
+      "message": "Transient tool timeout; retrying",
+      "attributes": { "attempt": 2 }
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0.0",
+  "project_id": "proj_demo",
+  "run_id": "run_hello_001",
+  "event_id": "evt_retry_001",
+  "span_id": "span_tool_001",
+  "type": "retry",
+  "timestamp": "2026-07-23T09:15:31.900Z",
+  "message": "Transient tool timeout; retrying",
+  "level": "warn",
+  "attributes": {
+    "attempt": 2,
+    "max_attempts": 3
+  }
+}

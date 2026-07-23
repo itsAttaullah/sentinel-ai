@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0.0",
+  "project_id": "proj_demo",
+  "batch_id": "batch_empty",
+  "runs": [],
+  "spans": [],
+  "events": []
+}
