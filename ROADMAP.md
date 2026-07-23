@@ -10,18 +10,18 @@ See also: [phase dependency diagram](./docs/diagrams/05-roadmap-phases.md) · [d
 
 | Phase | Name | Goal | Suggested branch |
 |---|---|---|---|
-| **0** | Architecture & Foundations | Design-only proposal, ADRs, diagrams | `docs/phase-0-architecture` |
-| **1** | Schema & Contracts | Versioned canonical trace schema + OpenAPI stubs | `feat/phase-1-schema-contracts` |
-| **2** | Python SDK | Instrumentation SDK + hello-trace example | `feat/phase-2-python-sdk` |
-| **3** | Ingest & Store | API ingest, Postgres persistence, Compose | `feat/phase-3-ingest-store` |
-| **4** | Metrics Engine | Latency, cost, retries, tool attribution | `feat/phase-4-metrics-engine` |
-| **5** | CLI & Developer Experience | CLI workflows for init/serve/query/upload | `feat/phase-5-cli-dx` |
-| **6** | Web UI Foundations | Projects, run list, timeline waterfall | `feat/phase-6-web-ui` |
-| **7** | Evaluation Engine | Deterministic + judge evaluators, scores | `feat/phase-7-evaluation` |
-| **8** | Benchmarking | Suites, config matrix, comparisons | `feat/phase-8-benchmarking` |
-| **9** | Framework Adapters | Plugin interface + first official adapters | `feat/phase-9-adapters` |
-| **10** | Regression & CI Gates | Version diffs, thresholds, CI reports | `feat/phase-10-regression-ci` |
-| **11** | Hardening & OSS Launch | Security, docs polish, release readiness | `feat/phase-11-hardening-oss` |
+| **0** | Architecture & Foundations | Design-only proposal, ADRs, diagrams | `docs/architecture` |
+| **1** | Schema & Contracts | Versioned canonical trace schema + OpenAPI stubs | `feat/schema-contracts` |
+| **2** | Python SDK | Instrumentation SDK + hello-trace example | `feat/python-sdk` |
+| **3** | Ingest & Store | API ingest, Postgres persistence, Compose | `feat/ingest-store` |
+| **4** | Metrics Engine | Latency, cost, retries, tool attribution | `feat/metrics-engine` |
+| **5** | CLI & Developer Experience | CLI workflows for init/serve/query/upload | `feat/cli-dx` |
+| **6** | Web UI Foundations | Projects, run list, timeline waterfall | `feat/web-ui` |
+| **7** | Evaluation Engine | Deterministic + judge evaluators, scores | `feat/evaluation` |
+| **8** | Benchmarking | Suites, config matrix, comparisons | `feat/benchmarking` |
+| **9** | Framework Adapters | Plugin interface + first official adapters | `feat/adapters` |
+| **10** | Regression & CI Gates | Version diffs, thresholds, CI reports | `feat/regression-ci` |
+| **11** | Hardening & OSS Launch | Security, docs polish, release readiness | `feat/hardening-oss` |
 
 ---
 
@@ -31,7 +31,7 @@ See also: [phase dependency diagram](./docs/diagrams/05-roadmap-phases.md) · [d
 
 Produce product vision, requirements, HLD, ADRs, diagrams, repo plan, and this roadmap. **No business logic code.**
 
-### Phase 1 — Schema & Contracts
+### Phase 1 — Schema & Contracts *(complete)*
 
 Publish JSON Schema for runs/spans/events; define compatibility policy; stub OpenAPI for ingest/control plane; golden fixtures.
 
