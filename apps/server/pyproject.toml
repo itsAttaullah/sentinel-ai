@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sentinel-server"
+version = "0.1.0"
+description = "Sentinel AI ingest gateway and control-plane API (self-hosted)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "License TBD" }
+dependencies = [
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.32.0",
+  "sqlalchemy>=2.0.36",
+  "psycopg[binary]>=3.2.3",
+  "pydantic-settings>=2.6.0",
+  "jsonschema>=4.23.0",
+  "referencing>=0.35.1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "httpx>=0.27.0",
+]
+
+[project.scripts]
+sentinel-server = "sentinel_server.__main__:main"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "src/sentinel_server",
+  "README.md",
+  "pyproject.toml",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
