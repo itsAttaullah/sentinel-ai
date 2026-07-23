@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sentinel-ai"
+version = "0.1.0"
+description = "Python instrumentation SDK for Sentinel AI — observe agent runs, spans, and events."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "License TBD" }
+authors = [
+  { name = "Sentinel AI Contributors" }
+]
+keywords = ["agents", "observability", "tracing", "evaluation", "sentinel"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Libraries",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/itsAttaullah/sentinel-ai"
+Documentation = "https://github.com/itsAttaullah/sentinel-ai/tree/main/packages/sdk-python"
+Repository = "https://github.com/itsAttaullah/sentinel-ai"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "src/sentinel_ai",
+  "tests",
+  "README.md",
+  "pyproject.toml",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
