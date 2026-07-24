@@ -9,6 +9,7 @@ from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.orm import Session
 
 from sentinel_server.models import Event, Project, QuarantineItem, Run, Span
+from sentinel_server.services.metrics import recompute_runs
 from sentinel_server.timeutil import parse_dt
 
 
@@ -59,6 +60,17 @@ def persist_ingest_batch(db: Session, batch: dict[str, Any]) -> dict[str, int]:
     for event in events:
         _upsert_event(db, event)
 
+    db.flush()
+
+    affected_run_ids: set[str] = set()
+    for run in runs:
+        affected_run_ids.add(run["run_id"])
+    for span in spans:
+        affected_run_ids.add(span["run_id"])
+    for event in events:
+        affected_run_ids.add(event["run_id"])
+
+    recompute_runs(db, project_id, affected_run_ids)
     db.commit()
     return {"runs": len(runs), "spans": len(spans), "events": len(events)}
 

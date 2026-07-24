@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, Index, String, Text, UniqueConstraint
+from sqlalchemy import DateTime, Float, Index, Integer, String, Text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.types import JSON
@@ -119,4 +119,32 @@ class QuarantineItem(Base):
     payload: Mapped[dict | list | None] = mapped_column(JsonType, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=utc_now, nullable=False
+    )
+
+
+class RunMetrics(Base):
+    """Derived metrics for a run (latency, cost, attribution, retries)."""
+
+    __tablename__ = "run_metrics"
+    __table_args__ = (
+        UniqueConstraint("project_id", "run_id", name="uq_run_metrics_project_run"),
+        Index("ix_run_metrics_project", "project_id"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    project_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    status: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    wall_ms: Mapped[float | None] = mapped_column(Float, nullable=True)
+    estimated_cost_usd: Mapped[float | None] = mapped_column(Float, nullable=True)
+    tokens_in: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    tokens_out: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    retry_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    metrics: Mapped[dict] = mapped_column(JsonType, nullable=False)
+    pricing_table_version: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    computed_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, onupdate=utc_now, nullable=False
     )
