@@ -43,7 +43,7 @@ Implement tracer APIs, context propagation, async export client (can target mock
 
 FastAPI ingest + project APIs; Postgres models; idempotent upserts; Docker Compose; quarantine for invalid batches.
 
-### Phase 4 — Metrics Engine
+### Phase 4 — Metrics Engine *(complete)*
 
 Derive per-run and rollup metrics: latency, tokens, estimated cost, retries, tool/LLM time share.
 

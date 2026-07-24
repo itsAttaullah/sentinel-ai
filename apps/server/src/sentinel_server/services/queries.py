@@ -5,7 +5,12 @@ from __future__ import annotations
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from sentinel_server.models import Event, Project, QuarantineItem, Run, Span
+from sentinel_server.models import Event, Project, QuarantineItem, Run, RunMetrics, Span
+from sentinel_server.services.metrics import (
+    aggregate_project_metrics,
+    get_run_metrics,
+    recompute_run_metrics,
+)
 
 
 def list_projects(db: Session) -> list[Project]:
@@ -65,6 +70,7 @@ def get_run_detail(
     *,
     include_spans: bool = True,
     include_events: bool = True,
+    include_metrics: bool = True,
 ) -> dict | None:
     run = db.scalar(
         select(Run).where(Run.project_id == project_id, Run.run_id == run_id)
@@ -91,7 +97,37 @@ def get_run_detail(
             ).all()
         )
         detail["events"] = [event.payload for event in events]
+    if include_metrics:
+        detail["metrics"] = get_run_metrics(db, project_id, run_id)
     return detail
+
+
+def list_run_metric_summaries(
+    db: Session, project_id: str, run_ids: list[str]
+) -> dict[str, RunMetrics]:
+    if not run_ids:
+        return {}
+    rows = list(
+        db.scalars(
+            select(RunMetrics).where(
+                RunMetrics.project_id == project_id,
+                RunMetrics.run_id.in_(run_ids),
+            )
+        ).all()
+    )
+    return {row.run_id: row for row in rows}
+
+
+def project_metrics(db: Session, project_id: str) -> dict:
+    return aggregate_project_metrics(db, project_id)
+
+
+def recompute_metrics_for_run(db: Session, project_id: str, run_id: str) -> dict | None:
+    metrics = recompute_run_metrics(db, project_id, run_id)
+    if metrics is None:
+        return None
+    db.commit()
+    return metrics
 
 
 def list_quarantine(db: Session, *, limit: int = 50) -> list[QuarantineItem]:

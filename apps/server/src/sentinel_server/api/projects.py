@@ -129,6 +129,9 @@ def list_runs(
         tag=tag,
         limit=limit,
     )
+    metrics_by_run = queries.list_run_metric_summaries(
+        db, project_id, [run.run_id for run in runs]
+    )
     return {
         "items": [
             {
@@ -140,6 +143,17 @@ def list_runs(
                 "started_at": run.started_at.isoformat() if run.started_at else None,
                 "ended_at": run.ended_at.isoformat() if run.ended_at else None,
                 "tags": run.tags,
+                "metrics_summary": (
+                    {
+                        "wall_ms": metrics_by_run[run.run_id].wall_ms,
+                        "estimated_cost_usd": metrics_by_run[run.run_id].estimated_cost_usd,
+                        "tokens_in": metrics_by_run[run.run_id].tokens_in,
+                        "tokens_out": metrics_by_run[run.run_id].tokens_out,
+                        "retry_count": metrics_by_run[run.run_id].retry_count,
+                    }
+                    if run.run_id in metrics_by_run
+                    else None
+                ),
             }
             for run in runs
         ]
@@ -150,7 +164,7 @@ def list_runs(
 def get_run(
     project_id: str,
     run_id: str,
-    include: str = Query(default="spans,events"),
+    include: str = Query(default="spans,events,metrics"),
     db: Session = Depends(get_db),
     _: None = Depends(require_auth),
 ) -> dict[str, Any]:
@@ -161,6 +175,7 @@ def get_run(
         run_id,
         include_spans="spans" in parts,
         include_events="events" in parts,
+        include_metrics="metrics" in parts,
     )
     if detail is None:
         raise HTTPException(
@@ -173,6 +188,46 @@ def get_run(
             },
         )
     return detail
+
+
+@router.post("/projects/{project_id}/runs/{run_id}/metrics/recompute")
+def recompute_run_metrics(
+    project_id: str,
+    run_id: str,
+    db: Session = Depends(get_db),
+    _: None = Depends(require_auth),
+) -> dict[str, Any]:
+    metrics = queries.recompute_metrics_for_run(db, project_id, run_id)
+    if metrics is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={
+                "error": {
+                    "code": "NOT_FOUND",
+                    "message": f"Run not found: {run_id}",
+                }
+            },
+        )
+    return {"project_id": project_id, "run_id": run_id, "metrics": metrics}
+
+
+@router.get("/projects/{project_id}/metrics")
+def get_project_metrics(
+    project_id: str,
+    db: Session = Depends(get_db),
+    _: None = Depends(require_auth),
+) -> dict[str, Any]:
+    if queries.get_project(db, project_id) is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={
+                "error": {
+                    "code": "NOT_FOUND",
+                    "message": f"Project not found: {project_id}",
+                }
+            },
+        )
+    return queries.project_metrics(db, project_id)
 
 
 @router.get("/quarantine")

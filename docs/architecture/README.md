@@ -14,6 +14,7 @@ Principal engineering design baseline for **Sentinel AI** — an open-source pla
 | 07 | [Repository Structure](./07-repository-structure.md) |
 | 08 | [Risks and Trade-offs](./08-risks-and-tradeoffs.md) |
 | 09 | [Trace Schema Reference v1](./09-trace-schema-v1.md) |
+| 10 | [Metrics and Pricing](./10-metrics-and-pricing.md) |
 
 Companion materials:
 

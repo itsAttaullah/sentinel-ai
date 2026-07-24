@@ -31,10 +31,32 @@ def test_ingest_and_get_run(client: TestClient, hello_batch: dict) -> None:
     assert payload["run"]["run_id"] == "run_hello_001"
     assert len(payload["spans"]) == 3
     assert len(payload["events"]) == 1
+    assert payload["metrics"] is not None
+    assert payload["metrics"]["wall_ms"] == 2500.0
+    assert payload["metrics"]["retry_count"] == 1
+    assert payload["metrics"]["tokens"]["in"] == 120
+    assert payload["metrics"]["estimated_cost_usd"] >= 0
 
     listed = client.get("/v1/projects/proj_demo/runs")
     assert listed.status_code == 200
-    assert any(item["run_id"] == "run_hello_001" for item in listed.json()["items"])
+    item = next(i for i in listed.json()["items"] if i["run_id"] == "run_hello_001")
+    assert item["metrics_summary"]["retry_count"] == 1
+
+    project_metrics = client.get("/v1/projects/proj_demo/metrics")
+    assert project_metrics.status_code == 200
+    summary = project_metrics.json()
+    assert summary["run_count"] == 1
+    assert summary["total_retries"] == 1
+    assert summary["success_rate"] == 1.0
+
+
+def test_recompute_metrics(client: TestClient, hello_batch: dict) -> None:
+    assert client.post("/v1/ingest", json=hello_batch).status_code == 202
+    response = client.post(
+        "/v1/projects/proj_demo/runs/run_hello_001/metrics/recompute"
+    )
+    assert response.status_code == 200
+    assert response.json()["metrics"]["tokens"]["out"] == 45
 
 
 def test_ingest_is_idempotent(client: TestClient, hello_batch: dict) -> None:
