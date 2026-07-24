@@ -1,0 +1,35 @@
+{
+  "version": "2026-07-24",
+  "currency": "USD",
+  "notes": "Approximate public list prices for cost *estimates*. Override via SENTINEL_PRICING_PATH.",
+  "models": {
+    "openai:gpt-4.1-mini": {
+      "input_per_1m": 0.4,
+      "output_per_1m": 1.6
+    },
+    "openai:gpt-4.1": {
+      "input_per_1m": 2.0,
+      "output_per_1m": 8.0
+    },
+    "openai:gpt-4o": {
+      "input_per_1m": 2.5,
+      "output_per_1m": 10.0
+    },
+    "openai:gpt-4o-mini": {
+      "input_per_1m": 0.15,
+      "output_per_1m": 0.6
+    },
+    "anthropic:claude-sonnet-4": {
+      "input_per_1m": 3.0,
+      "output_per_1m": 15.0
+    },
+    "anthropic:claude-3-5-haiku": {
+      "input_per_1m": 0.8,
+      "output_per_1m": 4.0
+    },
+    "*": {
+      "input_per_1m": 1.0,
+      "output_per_1m": 3.0
+    }
+  }
+}

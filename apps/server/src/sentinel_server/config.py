@@ -35,10 +35,11 @@ class Settings(BaseSettings):
         "postgresql+psycopg://sentinel:sentinel@localhost:5432/sentinel"
     )
     schema_dir: Path = Field(default_factory=_default_schema_dir)
+    pricing_path: Path | None = None
     auth_mode: Literal["local", "api_key"] = "local"
     api_keys: str = ""
     max_body_bytes: int = 10 * 1024 * 1024
-    app_version: str = "0.1.0"
+    app_version: str = "0.2.0"
 
     @property
     def api_key_set(self) -> set[str]:
