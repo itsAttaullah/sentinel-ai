@@ -24,6 +24,7 @@ services:
     environment:
       SENTINEL_DATABASE_URL: postgresql+psycopg://sentinel:sentinel@postgres:5432/sentinel
       SENTINEL_SCHEMA_DIR: /schema/jsonschema/v1
+      SENTINEL_PRICING_PATH: /pricing/default.json
       SENTINEL_AUTH_MODE: local
     depends_on:
       postgres:

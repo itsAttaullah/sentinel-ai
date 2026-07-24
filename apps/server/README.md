@@ -69,12 +69,26 @@ uvicorn sentinel_server.main:app --reload --port 8080
 
 ---
 
+## Metrics
+
+After ingest, the server derives per-run metrics (latency, tokens, estimated cost, retries, kind attribution).
+
+- Run detail includes `metrics` by default
+- `GET /v1/projects/{project_id}/metrics` returns project aggregates
+- `POST /v1/projects/{project_id}/runs/{run_id}/metrics/recompute` rebuilds from stored traces
+
+Pricing table: `apps/server/pricing/default.json` (override with `SENTINEL_PRICING_PATH`).  
+See [docs/architecture/10-metrics-and-pricing.md](../../docs/architecture/10-metrics-and-pricing.md).
+
+---
+
 ## Environment
 
 | Variable | Default | Meaning |
 |---|---|---|
 | `SENTINEL_DATABASE_URL` | `postgresql+psycopg://sentinel:sentinel@localhost:5432/sentinel` | SQLAlchemy URL |
 | `SENTINEL_SCHEMA_DIR` | auto-detect monorepo `packages/schema/jsonschema/v1` | JSON Schema path |
+| `SENTINEL_PRICING_PATH` | auto-detect `apps/server/pricing/default.json` | Cost estimate table |
 | `SENTINEL_AUTH_MODE` | `local` | `local` \| `api_key` |
 | `SENTINEL_API_KEYS` | empty | Comma-separated keys |
 | `SENTINEL_MAX_BODY_BYTES` | `10485760` (10 MiB) | Ingest body limit |
@@ -83,7 +97,6 @@ uvicorn sentinel_server.main:app --reload --port 8080
 
 ## Out of scope (later phases)
 
-- Metrics derivation workers
 - Evaluation / benchmarks
-- Redis queue
+- Redis queue / separate worker processes
 - Web UI
