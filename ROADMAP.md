@@ -47,9 +47,9 @@ FastAPI ingest + project APIs; Postgres models; idempotent upserts; Docker Compo
 
 Derive per-run and rollup metrics: latency, tokens, estimated cost, retries, tool/LLM time share.
 
-### Phase 5 — CLI & Developer Experience
+### Phase 5 — CLI & Developer Experience *(complete)*
 
-`sentinel` CLI: init, serve helpers, upload, query, whoami; improve time-to-first-trace docs.
+`sentinel` CLI: init, health, upload, runs query, metrics, serve guidance; CI-friendly `--json` output.
 
 ### Phase 6 — Web UI Foundations
 

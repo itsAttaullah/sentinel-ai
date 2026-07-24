@@ -69,6 +69,7 @@ Sentinel AI turns agent execution into structured telemetry, reproducible benchm
 | [packages/schema/](./packages/schema/) | JSON Schema, fixtures, OpenAPI stubs |
 | [packages/sdk-python/](./packages/sdk-python/) | Python instrumentation SDK |
 | [apps/server/](./apps/server/) | Ingest API + Postgres control plane |
+| [apps/cli/](./apps/cli/) | `sentinel` developer CLI |
 | [examples/hello-trace/](./examples/hello-trace/) | File-export quickstart |
 | [docs/adr/](./docs/adr/) | Architecture Decision Records |
 | [docs/diagrams/](./docs/diagrams/) | Mermaid architecture diagrams |
@@ -78,11 +79,12 @@ Sentinel AI turns agent execution into structured telemetry, reproducible benchm
 
 ## Status
 
-**Phase 4 — Metrics Engine (complete on branch `feat/metrics-engine`)**
+**Phase 5 — CLI & Developer Experience (complete on branch `feat/cli-dx`)**
 
 - Schema: [`packages/schema`](./packages/schema/)
 - Python SDK: [`packages/sdk-python`](./packages/sdk-python/)
-- Server: [`apps/server`](./apps/server/) (ingest + derived metrics)
+- Server: [`apps/server`](./apps/server/)
+- CLI: [`apps/cli`](./apps/cli/) (`sentinel` command)
 - Example: [`examples/hello-trace`](./examples/hello-trace/)
 
 ### Dev setup (virtualenv)
@@ -95,6 +97,7 @@ python -m venv .venv
 pip install -U pip
 pip install -e ".\packages\sdk-python[dev]"
 pip install -e ".\apps\server[dev]"
+pip install -e ".\apps\cli[dev]"
 ```
 
 Run tests:
@@ -102,6 +105,7 @@ Run tests:
 ```powershell
 pytest .\packages\sdk-python\tests -q
 pytest .\apps\server\tests -q
+pytest .\apps\cli\tests -q
 ```
 
 `.venv/` is gitignored — never commit the virtualenv.
@@ -115,10 +119,18 @@ docker compose up --build
 With the venv active:
 
 ```powershell
-python .\examples\hello-trace\main.py
+sentinel init --project-id proj_demo
+sentinel health
+sentinel upload .\packages\schema\fixtures\valid\ingest-batch.hello.json
+sentinel runs get run_hello_001
+sentinel metrics
 ```
 
-Then POST a batch (or point `HttpExporter` at `http://localhost:8080/v1/ingest`) and inspect `metrics` on the run detail API.
+Or emit a local file trace:
+
+```powershell
+python .\examples\hello-trace\main.py
+```
 
 ---
 

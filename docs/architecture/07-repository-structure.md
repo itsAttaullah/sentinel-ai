@@ -86,7 +86,7 @@ server ✗→ web
 
 ---
 
-## 5. What Exists After Phase 3
+## 5. What Exists After Phase 5
 
 ```text
 sentinel-ai/
@@ -97,13 +97,14 @@ sentinel-ai/
 │   ├── schema/
 │   └── sdk-python/
 ├── apps/
-│   └── server/          # FastAPI ingest + control plane
+│   ├── server/          # FastAPI ingest + metrics
+│   └── cli/             # sentinel CLI
 ├── examples/
 │   └── hello-trace/
 └── docs/
 ```
 
-UI, metrics workers, and eval packages appear in later phases.
+Web UI and evaluation packages appear in later phases.
 
 ---
 
