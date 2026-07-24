@@ -6,9 +6,9 @@ info:
 
     Trace payloads MUST conform to `packages/schema/jsonschema/v1`.
 
-    **Implementation status:** Ingest, projects, runs, health, and quarantine
-    routes are implemented by `apps/server` (Phase 3). Eval/benchmark routes
-    remain stubs until later phases.
+    **Implementation status:** Ingest, projects, runs, health, quarantine, and
+    derived metrics routes are implemented by `apps/server` (Phases 3–4).
+    Eval/benchmark routes remain stubs until later phases.
   version: 0.1.0
   contact:
     name: Sentinel AI Maintainers

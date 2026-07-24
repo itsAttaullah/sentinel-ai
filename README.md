@@ -65,6 +65,7 @@ Sentinel AI turns agent execution into structured telemetry, reproducible benchm
 | [docs/architecture/07-repository-structure.md](./docs/architecture/07-repository-structure.md) | Monorepo layout |
 | [docs/architecture/08-risks-and-tradeoffs.md](./docs/architecture/08-risks-and-tradeoffs.md) | Risks and trade-offs |
 | [docs/architecture/09-trace-schema-v1.md](./docs/architecture/09-trace-schema-v1.md) | Trace schema reference (v1) |
+| [docs/architecture/10-metrics-and-pricing.md](./docs/architecture/10-metrics-and-pricing.md) | Metrics + pricing table |
 | [packages/schema/](./packages/schema/) | JSON Schema, fixtures, OpenAPI stubs |
 | [packages/sdk-python/](./packages/sdk-python/) | Python instrumentation SDK |
 | [apps/server/](./apps/server/) | Ingest API + Postgres control plane |
@@ -77,12 +78,33 @@ Sentinel AI turns agent execution into structured telemetry, reproducible benchm
 
 ## Status
 
-**Phase 3 — Ingest & Store (complete on branch `feat/ingest-store`)**
+**Phase 4 — Metrics Engine (complete on branch `feat/metrics-engine`)**
 
 - Schema: [`packages/schema`](./packages/schema/)
 - Python SDK: [`packages/sdk-python`](./packages/sdk-python/)
-- Server: [`apps/server`](./apps/server/)
+- Server: [`apps/server`](./apps/server/) (ingest + derived metrics)
 - Example: [`examples/hello-trace`](./examples/hello-trace/)
+
+### Dev setup (virtualenv)
+
+From the repository root (PowerShell):
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -U pip
+pip install -e ".\packages\sdk-python[dev]"
+pip install -e ".\apps\server[dev]"
+```
+
+Run tests:
+
+```powershell
+pytest .\packages\sdk-python\tests -q
+pytest .\apps\server\tests -q
+```
+
+`.venv/` is gitignored — never commit the virtualenv.
 
 ### Quickstart (local stack)
 
@@ -90,12 +112,13 @@ Sentinel AI turns agent execution into structured telemetry, reproducible benchm
 docker compose up --build
 ```
 
+With the venv active:
+
 ```powershell
-pip install -e .\packages\sdk-python
 python .\examples\hello-trace\main.py
 ```
 
-Then POST a batch (or point `HttpExporter` at `http://localhost:8080/v1/ingest`).
+Then POST a batch (or point `HttpExporter` at `http://localhost:8080/v1/ingest`) and inspect `metrics` on the run detail API.
 
 ---
 
