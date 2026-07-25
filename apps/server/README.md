@@ -82,6 +82,18 @@ See [docs/architecture/10-metrics-and-pricing.md](../../docs/architecture/10-met
 
 ---
 
+## Evaluation
+
+Versioned evaluators + suites score stored runs and emit **immutable** scores (ADR-0006).
+
+- `POST /v1/projects/{id}/evaluators` / `suites`
+- `POST /v1/projects/{id}/evals` — run suite against a run (sync, returns job + scores)
+- `GET /v1/projects/{id}/runs/{run_id}/scores`
+
+See [docs/architecture/11-evaluation-model.md](../../docs/architecture/11-evaluation-model.md).
+
+---
+
 ## Environment
 
 | Variable | Default | Meaning |
@@ -97,6 +109,7 @@ See [docs/architecture/10-metrics-and-pricing.md](../../docs/architecture/10-met
 
 ## Out of scope (later phases)
 
-- Evaluation / benchmarks
 - Redis queue / separate worker processes
-- Web UI
+- Remote hosted LLM judge HTTP provider
+- Web UI eval editors
+- Benchmark matrices

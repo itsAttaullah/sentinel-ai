@@ -66,6 +66,7 @@ Sentinel AI turns agent execution into structured telemetry, reproducible benchm
 | [docs/architecture/08-risks-and-tradeoffs.md](./docs/architecture/08-risks-and-tradeoffs.md) | Risks and trade-offs |
 | [docs/architecture/09-trace-schema-v1.md](./docs/architecture/09-trace-schema-v1.md) | Trace schema reference (v1) |
 | [docs/architecture/10-metrics-and-pricing.md](./docs/architecture/10-metrics-and-pricing.md) | Metrics + pricing table |
+| [docs/architecture/11-evaluation-model.md](./docs/architecture/11-evaluation-model.md) | Evaluation suites & scores |
 | [packages/schema/](./packages/schema/) | JSON Schema, fixtures, OpenAPI stubs |
 | [packages/sdk-python/](./packages/sdk-python/) | Python instrumentation SDK |
 | [apps/server/](./apps/server/) | Ingest API + Postgres control plane |
@@ -80,11 +81,11 @@ Sentinel AI turns agent execution into structured telemetry, reproducible benchm
 
 ## Status
 
-**Phase 6 — Web UI Foundations (complete on branch `feat/web-ui`)**
+**Phase 7 — Evaluation Engine (complete on branch `feat/evaluation`)**
 
 - Schema: [`packages/schema`](./packages/schema/)
 - Python SDK: [`packages/sdk-python`](./packages/sdk-python/)
-- Server: [`apps/server`](./apps/server/)
+- Server: [`apps/server`](./apps/server/) (ingest + metrics + evaluation)
 - CLI: [`apps/cli`](./apps/cli/)
 - Web UI: [`apps/web`](./apps/web/)
 - Example: [`examples/hello-trace`](./examples/hello-trace/)

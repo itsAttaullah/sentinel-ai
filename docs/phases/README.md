@@ -11,7 +11,7 @@ Per-phase scope notes for Sentinel AI. Parent plan: [ROADMAP.md](../../ROADMAP.m
 | 4 | [phase-04-metrics-engine.md](./phase-04-metrics-engine.md) | Complete |
 | 5 | [phase-05-cli-dx.md](./phase-05-cli-dx.md) | Complete |
 | 6 | [phase-06-web-ui.md](./phase-06-web-ui.md) | Complete |
-| 7 | [phase-07-evaluation.md](./phase-07-evaluation.md) | Not started |
+| 7 | [phase-07-evaluation.md](./phase-07-evaluation.md) | Complete |
 | 8 | [phase-08-benchmarking.md](./phase-08-benchmarking.md) | Not started |
 | 9 | [phase-09-adapters.md](./phase-09-adapters.md) | Not started |
 | 10 | [phase-10-regression-ci.md](./phase-10-regression-ci.md) | Not started |
