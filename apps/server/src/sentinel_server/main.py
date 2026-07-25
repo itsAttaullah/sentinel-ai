@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from sentinel_server import __version__
@@ -19,12 +20,28 @@ async def lifespan(_app: FastAPI):
     yield
 
 
+def _add_cors(application: FastAPI) -> None:
+    application.add_middleware(
+        CORSMiddleware,
+        allow_origins=[
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://localhost:4173",
+            "http://127.0.0.1:4173",
+        ],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+
 app = FastAPI(
     title="Sentinel AI API",
     version=__version__,
     description="Ingest gateway and control plane for Sentinel AI traces.",
     lifespan=lifespan,
 )
+_add_cors(app)
 
 app.include_router(health.router)
 app.include_router(ingest.router)
@@ -60,6 +77,7 @@ def create_app(*, database_url: str | None = None) -> FastAPI:
         version=__version__,
         lifespan=_lifespan,
     )
+    _add_cors(test_app)
     test_app.include_router(health.router)
     test_app.include_router(ingest.router)
     test_app.include_router(projects.router)
