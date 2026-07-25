@@ -32,3 +32,7 @@ Thumbs.db
 
 # Local trace outputs
 examples/hello-trace/out/*.jsonl
+
+# Node
+node_modules/
+apps/web/dist/
