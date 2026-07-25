@@ -7,9 +7,8 @@ info:
     Trace payloads MUST conform to `packages/schema/jsonschema/v1`.
 
     **Implementation status:** Ingest, projects, runs, health, quarantine,
-    derived metrics, and evaluation (evaluators/suites/evals/scores) are
-    implemented by `apps/server` (Phases 3–7). Benchmark routes remain stubs
-    until a later phase.
+    derived metrics, evaluation, and benchmarking routes are implemented by
+    `apps/server` (Phases 3–8).
   version: 0.1.0
   contact:
     name: Sentinel AI Maintainers
@@ -427,11 +426,175 @@ paths:
                     items:
                       $ref: "#/components/schemas/Score"
 
+  /v1/projects/{project_id}/benchmark-suites:
+    get:
+      tags: [benchmarks]
+      summary: List benchmark suites
+      operationId: listBenchmarkSuites
+      security:
+        - ApiKeyAuth: []
+        - {}
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Benchmark suite list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/BenchmarkSuite"
+    post:
+      tags: [benchmarks]
+      summary: Register a versioned benchmark suite
+      description: |
+        Defines tasks, optional linked eval suite, and sweep dimensions.
+        Sentinel does not execute agents; callers register completed runs as cells.
+      operationId: createBenchmarkSuite
+      security:
+        - ApiKeyAuth: []
+        - {}
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BenchmarkSuiteCreate"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BenchmarkSuite"
+
+  /v1/projects/{project_id}/benchmark-suites/{benchmark_id}/cells:
+    get:
+      tags: [benchmarks]
+      summary: List benchmark cells
+      operationId: listBenchmarkCells
+      security:
+        - ApiKeyAuth: []
+        - {}
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: benchmark_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: version
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Cells
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/BenchmarkCell"
+    post:
+      tags: [benchmarks]
+      summary: Register a matrix cell (link a completed run)
+      operationId: registerBenchmarkCell
+      security:
+        - ApiKeyAuth: []
+        - {}
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: benchmark_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [task_id, run_id]
+              additionalProperties: false
+              properties:
+                task_id:
+                  type: string
+                run_id:
+                  type: string
+                dimensions:
+                  type: object
+                  additionalProperties: true
+                environment:
+                  type: object
+                  additionalProperties: true
+                cell_id:
+                  type: string
+                eval_job_id:
+                  type: string
+                run_eval:
+                  type: boolean
+                benchmark_version:
+                  type: string
+      responses:
+        "201":
+          description: Cell registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BenchmarkCell"
+
+  /v1/projects/{project_id}/benchmark-suites/{benchmark_id}/leaderboard:
+    get:
+      tags: [benchmarks]
+      summary: Matrix leaderboard for a benchmark suite
+      operationId: getBenchmarkLeaderboard
+      security:
+        - ApiKeyAuth: []
+        - {}
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: benchmark_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: version
+          in: query
+          schema:
+            type: string
+        - name: baseline_agent_version
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Leaderboard report
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+
   /v1/projects/{project_id}/benchmarks:
     post:
       tags: [benchmarks]
-      summary: Register or trigger a benchmark comparison (stub)
-      description: Implemented in benchmarking phase. Declared early for contract stability.
+      summary: Build a benchmark comparison report
+      description: |
+        Aggregates registered cells into a leaderboard and optional pairwise
+        deltas vs baseline_agent_version. Executes synchronously.
       operationId: createBenchmarkJob
       security:
         - ApiKeyAuth: []
@@ -446,17 +609,40 @@ paths:
               $ref: "#/components/schemas/BenchmarkJobCreate"
       responses:
         "202":
-          description: Benchmark job accepted
+          description: Benchmark job finished (succeeded or failed status)
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/BenchmarkJob"
-        "501":
-          description: Not implemented yet
+        "400":
+          description: Invalid request
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+
+  /v1/projects/{project_id}/benchmarks/{job_id}:
+    get:
+      tags: [benchmarks]
+      summary: Get benchmark comparison job
+      operationId: getBenchmarkJob
+      security:
+        - ApiKeyAuth: []
+        - {}
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Benchmark job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BenchmarkJob"
 
 components:
   securitySchemes:
@@ -837,10 +1023,14 @@ components:
 
     BenchmarkJobCreate:
       type: object
-      required: [suite_id]
       additionalProperties: false
       properties:
         suite_id:
+          type: string
+          description: Alias for benchmark_id (OpenAPI compatibility)
+        benchmark_id:
+          type: string
+        benchmark_version:
           type: string
         baseline_agent_version:
           type: string
@@ -852,6 +1042,102 @@ components:
       properties:
         id:
           type: string
+        project_id:
+          type: string
+        benchmark_id:
+          type: string
+        benchmark_version:
+          type: string
         status:
           type: string
           enum: [queued, running, succeeded, failed]
+        baseline_agent_version:
+          type: string
+          nullable: true
+        report:
+          type: object
+          additionalProperties: true
+        error_message:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        finished_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    BenchmarkSuiteCreate:
+      type: object
+      required: [benchmark_id, version, name, definition]
+      additionalProperties: false
+      properties:
+        benchmark_id:
+          type: string
+        version:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        definition:
+          type: object
+          additionalProperties: true
+
+    BenchmarkSuite:
+      type: object
+      required: [benchmark_id, version, name, definition]
+      additionalProperties: false
+      properties:
+        benchmark_id:
+          type: string
+        version:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        definition:
+          type: object
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+
+    BenchmarkCell:
+      type: object
+      required: [cell_id, task_id, run_id, dimensions, environment_fingerprint]
+      additionalProperties: false
+      properties:
+        cell_id:
+          type: string
+        benchmark_id:
+          type: string
+        benchmark_version:
+          type: string
+        task_id:
+          type: string
+        run_id:
+          type: string
+        eval_job_id:
+          type: string
+          nullable: true
+        dimensions:
+          type: object
+          additionalProperties: true
+        environment_fingerprint:
+          type: object
+          additionalProperties: true
+        metrics_snapshot:
+          type: object
+          additionalProperties: true
+          nullable: true
+        scores_summary:
+          type: object
+          additionalProperties: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time

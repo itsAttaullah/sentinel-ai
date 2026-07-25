@@ -59,7 +59,7 @@ Project switcher, run list filters, run detail timeline/waterfall, basic metric 
 
 Suite/evaluator registry; deterministic checks; versioned judge evaluators; immutable score records.
 
-### Phase 8 — Benchmarking
+### Phase 8 — Benchmarking *(complete)*
 
 Benchmark suite definitions; config matrix metadata; aggregation; pairwise comparison views/reports.
 

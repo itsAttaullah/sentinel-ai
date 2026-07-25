@@ -16,6 +16,7 @@ Principal engineering design baseline for **Sentinel AI** — an open-source pla
 | 09 | [Trace Schema Reference v1](./09-trace-schema-v1.md) |
 | 10 | [Metrics and Pricing](./10-metrics-and-pricing.md) |
 | 11 | [Evaluation Model](./11-evaluation-model.md) |
+| 12 | [Benchmarking](./12-benchmarking.md) |
 
 Companion materials:
 

@@ -94,6 +94,18 @@ See [docs/architecture/11-evaluation-model.md](../../docs/architecture/11-evalua
 
 ---
 
+## Benchmarking
+
+Register config-matrix cells (linked runs) and compare them. Sentinel does **not** execute agents.
+
+- `POST /v1/projects/{id}/benchmark-suites`
+- `POST /v1/projects/{id}/benchmark-suites/{benchmark_id}/cells` (`run_eval` optional)
+- `GET .../leaderboard` and `POST /v1/projects/{id}/benchmarks`
+
+See [docs/architecture/12-benchmarking.md](../../docs/architecture/12-benchmarking.md).
+
+---
+
 ## Environment
 
 | Variable | Default | Meaning |
@@ -111,5 +123,5 @@ See [docs/architecture/11-evaluation-model.md](../../docs/architecture/11-evalua
 
 - Redis queue / separate worker processes
 - Remote hosted LLM judge HTTP provider
-- Web UI eval editors
-- Benchmark matrices
+- Full visual matrix designer UI
+- Statistical significance / CI regression gates
