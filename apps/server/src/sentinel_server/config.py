@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     auth_mode: Literal["local", "api_key"] = "local"
     api_keys: str = ""
     max_body_bytes: int = 10 * 1024 * 1024
-    app_version: str = "0.3.0"
+    app_version: str = "0.4.0"
 
     @property
     def api_key_set(self) -> set[str]:

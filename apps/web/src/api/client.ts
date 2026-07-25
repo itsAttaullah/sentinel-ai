@@ -1,4 +1,11 @@
-import type { Project, ProjectMetrics, RunDetail, RunSummary } from "./types";
+import type {
+  BenchmarkSuite,
+  LeaderboardReport,
+  Project,
+  ProjectMetrics,
+  RunDetail,
+  RunSummary,
+} from "./types";
 
 const API_BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, "") ?? "";
 
@@ -49,4 +56,26 @@ export function fetchRun(
 
 export function fetchProjectMetrics(projectId: string): Promise<ProjectMetrics> {
   return request(`/v1/projects/${encodeURIComponent(projectId)}/metrics`);
+}
+
+export function fetchBenchmarkSuites(
+  projectId: string,
+): Promise<{ items: BenchmarkSuite[] }> {
+  return request(`/v1/projects/${encodeURIComponent(projectId)}/benchmark-suites`);
+}
+
+export function fetchLeaderboard(
+  projectId: string,
+  benchmarkId: string,
+  opts?: { version?: string; baseline_agent_version?: string },
+): Promise<LeaderboardReport> {
+  const params = new URLSearchParams();
+  if (opts?.version) params.set("version", opts.version);
+  if (opts?.baseline_agent_version) {
+    params.set("baseline_agent_version", opts.baseline_agent_version);
+  }
+  const qs = params.toString();
+  return request(
+    `/v1/projects/${encodeURIComponent(projectId)}/benchmark-suites/${encodeURIComponent(benchmarkId)}/leaderboard${qs ? `?${qs}` : ""}`,
+  );
 }

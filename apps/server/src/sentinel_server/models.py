@@ -242,3 +242,81 @@ class Score(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=utc_now, nullable=False
     )
+
+
+class BenchmarkSuite(Base):
+    """Versioned benchmark suite: tasks + eval suite + sweep dimensions."""
+
+    __tablename__ = "benchmark_suites"
+    __table_args__ = (
+        UniqueConstraint(
+            "project_id", "benchmark_id", "version", name="uq_benchmark_suites_id_ver"
+        ),
+        Index("ix_benchmark_suites_project", "project_id"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    project_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    benchmark_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    version: Mapped[str] = mapped_column(String(64), nullable=False)
+    name: Mapped[str] = mapped_column(String(256), nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    definition: Mapped[dict] = mapped_column(JsonType, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, nullable=False
+    )
+
+
+class BenchmarkCell(Base):
+    """One matrix cell: config dimensions + linked run (+ optional eval)."""
+
+    __tablename__ = "benchmark_cells"
+    __table_args__ = (
+        UniqueConstraint(
+            "project_id",
+            "benchmark_id",
+            "benchmark_version",
+            "cell_id",
+            name="uq_benchmark_cells_cell",
+        ),
+        Index("ix_benchmark_cells_suite", "project_id", "benchmark_id", "benchmark_version"),
+        Index("ix_benchmark_cells_run", "project_id", "run_id"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    project_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    benchmark_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    benchmark_version: Mapped[str] = mapped_column(String(64), nullable=False)
+    cell_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    task_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    eval_job_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    dimensions: Mapped[dict] = mapped_column(JsonType, nullable=False)
+    environment_fingerprint: Mapped[dict] = mapped_column(JsonType, nullable=False)
+    metrics_snapshot: Mapped[dict | None] = mapped_column(JsonType, nullable=True)
+    scores_summary: Mapped[dict | None] = mapped_column(JsonType, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, nullable=False
+    )
+
+
+class BenchmarkJob(Base):
+    """Comparison / leaderboard report over registered cells."""
+
+    __tablename__ = "benchmark_jobs"
+    __table_args__ = (
+        Index("ix_benchmark_jobs_project", "project_id", "benchmark_id"),
+    )
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    project_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    benchmark_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    benchmark_version: Mapped[str] = mapped_column(String(64), nullable=False)
+    status: Mapped[str] = mapped_column(String(32), nullable=False)
+    baseline_agent_version: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    report: Mapped[dict | None] = mapped_column(JsonType, nullable=True)
+    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, nullable=False
+    )
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

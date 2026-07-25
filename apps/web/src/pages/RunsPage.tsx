@@ -70,6 +70,12 @@ export function RunsPage() {
           <h1>Runs</h1>
           <p className="muted">Filter and open a run to inspect its timeline.</p>
         </div>
+        <Link
+          className="text-link"
+          to={`/projects/${encodeURIComponent(projectId)}/benchmarks`}
+        >
+          Benchmarks →
+        </Link>
       </div>
 
       {metrics && (
