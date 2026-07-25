@@ -51,7 +51,7 @@ Derive per-run and rollup metrics: latency, tokens, estimated cost, retries, too
 
 `sentinel` CLI: init, health, upload, runs query, metrics, serve guidance; CI-friendly `--json` output.
 
-### Phase 6 — Web UI Foundations
+### Phase 6 — Web UI Foundations *(complete)*
 
 Project switcher, run list filters, run detail timeline/waterfall, basic metric panels.
 

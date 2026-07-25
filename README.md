@@ -70,6 +70,7 @@ Sentinel AI turns agent execution into structured telemetry, reproducible benchm
 | [packages/sdk-python/](./packages/sdk-python/) | Python instrumentation SDK |
 | [apps/server/](./apps/server/) | Ingest API + Postgres control plane |
 | [apps/cli/](./apps/cli/) | `sentinel` developer CLI |
+| [apps/web/](./apps/web/) | Run exploration web UI |
 | [examples/hello-trace/](./examples/hello-trace/) | File-export quickstart |
 | [docs/adr/](./docs/adr/) | Architecture Decision Records |
 | [docs/diagrams/](./docs/diagrams/) | Mermaid architecture diagrams |
@@ -79,12 +80,13 @@ Sentinel AI turns agent execution into structured telemetry, reproducible benchm
 
 ## Status
 
-**Phase 5 — CLI & Developer Experience (complete on branch `feat/cli-dx`)**
+**Phase 6 — Web UI Foundations (complete on branch `feat/web-ui`)**
 
 - Schema: [`packages/schema`](./packages/schema/)
 - Python SDK: [`packages/sdk-python`](./packages/sdk-python/)
 - Server: [`apps/server`](./apps/server/)
-- CLI: [`apps/cli`](./apps/cli/) (`sentinel` command)
+- CLI: [`apps/cli`](./apps/cli/)
+- Web UI: [`apps/web`](./apps/web/)
 - Example: [`examples/hello-trace`](./examples/hello-trace/)
 
 ### Dev setup (virtualenv)
@@ -98,6 +100,14 @@ pip install -U pip
 pip install -e ".\packages\sdk-python[dev]"
 pip install -e ".\apps\server[dev]"
 pip install -e ".\apps\cli[dev]"
+```
+
+Web UI (separate Node toolchain):
+
+```powershell
+cd apps\web
+npm install
+npm run dev
 ```
 
 Run tests:
@@ -116,21 +126,17 @@ pytest .\apps\cli\tests -q
 docker compose up --build
 ```
 
-With the venv active:
+Upload a sample, then explore in the UI:
 
 ```powershell
 sentinel init --project-id proj_demo
-sentinel health
 sentinel upload .\packages\schema\fixtures\valid\ingest-batch.hello.json
-sentinel runs get run_hello_001
-sentinel metrics
+cd apps\web
+npm install
+npm run dev
 ```
 
-Or emit a local file trace:
-
-```powershell
-python .\examples\hello-trace\main.py
-```
+Open http://localhost:5173 → project `proj_demo` → run `run_hello_001`.
 
 ---
 
