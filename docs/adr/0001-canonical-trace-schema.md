@@ -20,12 +20,12 @@ Sentinel defines a **Canonical Agent Trace Schema** as the system of record for 
 6. Framework adapters **must** map into this schema; they must not invent parallel persistence models.
 7. Alignment with OpenTelemetry GenAI conventions is encouraged via a mapping layer, but OTel is not the only ingest path.
 
-### Concrete v1 location (Phase 1)
+### Concrete v1 location
 
 - Schemas: `packages/schema/jsonschema/v1/`
 - Fixtures: `packages/schema/fixtures/`
 - Version policy: `packages/schema/VERSIONING.md`
-- Human reference: `docs/architecture/09-trace-schema-v1.md`
+- OpenAPI: `packages/schema/openapi/openapi.yaml`
 - Initial wire version: `schema_version = "1.0.0"`
 
 ## Consequences

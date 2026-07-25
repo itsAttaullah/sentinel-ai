@@ -53,18 +53,18 @@ packages/schema/
 | **Event** | Point-in-time signal (`retry`, `error`, `log`, `checkpoint`, `feedback`, `custom`) |
 | **IngestBatch** | Envelope posted to ingest containing runs/spans/events |
 
-See [VERSIONING.md](./VERSIONING.md) and [docs/architecture](../../docs/architecture/README.md).
+See [VERSIONING.md](./VERSIONING.md) for compatibility rules.
 
 ---
 
 ## Validation (for implementers)
 
-Validators belong in later phases (SDK / server). For manual checks, any JSON Schema 2020-12 validator may be used against files in `jsonschema/v1/` and `fixtures/`.
+Validators live in the SDK and server. For manual checks, any JSON Schema 2020-12 validator may be used against files in `jsonschema/v1/` and `fixtures/`.
 
 ---
 
 ## Related
 
 - [ADR-0001 Canonical Trace Schema](../../docs/adr/0001-canonical-trace-schema.md)
-- [Phase 1 notes](../../docs/phases/phase-01-schema-contracts.md)
-- [Trace Schema Reference v1](../../docs/architecture/09-trace-schema-v1.md)
+- [OpenAPI stub](./openapi/openapi.yaml)
+- [Valid fixtures](./fixtures/valid/)

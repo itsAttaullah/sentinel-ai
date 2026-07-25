@@ -2,12 +2,12 @@
 
 Self-hosted **ingest gateway + control plane** for Sentinel AI.
 
-Phase 3 scope:
+Includes:
 
 - `POST /v1/ingest` with JSON Schema v1 validation
 - Postgres persistence for projects, runs, spans, events
-- Idempotent upserts
-- Quarantine store for invalid batches
+- Idempotent upserts and quarantine for invalid batches
+- Derived metrics, evaluation suites/scores, and benchmark comparisons
 - Docker Compose (API + Postgres)
 - Local auth mode (no API key) by default
 
@@ -77,20 +77,17 @@ After ingest, the server derives per-run metrics (latency, tokens, estimated cos
 - `GET /v1/projects/{project_id}/metrics` returns project aggregates
 - `POST /v1/projects/{project_id}/runs/{run_id}/metrics/recompute` rebuilds from stored traces
 
-Pricing table: `apps/server/pricing/default.json` (override with `SENTINEL_PRICING_PATH`).  
-See [docs/architecture/10-metrics-and-pricing.md](../../docs/architecture/10-metrics-and-pricing.md).
+Pricing table: `apps/server/pricing/default.json` (override with `SENTINEL_PRICING_PATH`).
 
 ---
 
 ## Evaluation
 
-Versioned evaluators + suites score stored runs and emit **immutable** scores (ADR-0006).
+Versioned evaluators + suites score stored runs and emit **immutable** scores ([ADR-0006](../../docs/adr/0006-evaluation-model.md)).
 
 - `POST /v1/projects/{id}/evaluators` / `suites`
 - `POST /v1/projects/{id}/evals` — run suite against a run (sync, returns job + scores)
 - `GET /v1/projects/{id}/runs/{run_id}/scores`
-
-See [docs/architecture/11-evaluation-model.md](../../docs/architecture/11-evaluation-model.md).
 
 ---
 
@@ -102,7 +99,7 @@ Register config-matrix cells (linked runs) and compare them. Sentinel does **not
 - `POST /v1/projects/{id}/benchmark-suites/{benchmark_id}/cells` (`run_eval` optional)
 - `GET .../leaderboard` and `POST /v1/projects/{id}/benchmarks`
 
-See [docs/architecture/12-benchmarking.md](../../docs/architecture/12-benchmarking.md).
+See also [`examples/benchmark-smoke/`](../../examples/benchmark-smoke/).
 
 ---
 
@@ -119,7 +116,7 @@ See [docs/architecture/12-benchmarking.md](../../docs/architecture/12-benchmarki
 
 ---
 
-## Out of scope (later phases)
+## Out of scope (later)
 
 - Redis queue / separate worker processes
 - Remote hosted LLM judge HTTP provider

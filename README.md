@@ -54,42 +54,28 @@ Sentinel AI turns agent execution into structured telemetry, reproducible benchm
 
 | Document | Purpose |
 |---|---|
-| [ROADMAP.md](./ROADMAP.md) | Phased development plan |
-| [docs/architecture/00-product-vision.md](./docs/architecture/00-product-vision.md) | Product vision |
-| [docs/architecture/01-functional-requirements.md](./docs/architecture/01-functional-requirements.md) | Functional requirements |
-| [docs/architecture/02-non-functional-requirements.md](./docs/architecture/02-non-functional-requirements.md) | Non-functional requirements |
-| [docs/architecture/03-high-level-architecture.md](./docs/architecture/03-high-level-architecture.md) | System architecture |
-| [docs/architecture/04-component-responsibilities.md](./docs/architecture/04-component-responsibilities.md) | Component ownership |
-| [docs/architecture/05-data-flow.md](./docs/architecture/05-data-flow.md) | End-to-end data flows |
-| [docs/architecture/06-technology-recommendations.md](./docs/architecture/06-technology-recommendations.md) | Stack recommendations |
-| [docs/architecture/07-repository-structure.md](./docs/architecture/07-repository-structure.md) | Monorepo layout |
-| [docs/architecture/08-risks-and-tradeoffs.md](./docs/architecture/08-risks-and-tradeoffs.md) | Risks and trade-offs |
-| [docs/architecture/09-trace-schema-v1.md](./docs/architecture/09-trace-schema-v1.md) | Trace schema reference (v1) |
-| [docs/architecture/10-metrics-and-pricing.md](./docs/architecture/10-metrics-and-pricing.md) | Metrics + pricing table |
-| [docs/architecture/11-evaluation-model.md](./docs/architecture/11-evaluation-model.md) | Evaluation suites & scores |
-| [docs/architecture/12-benchmarking.md](./docs/architecture/12-benchmarking.md) | Benchmark matrices & comparisons |
-| [packages/schema/](./packages/schema/) | JSON Schema, fixtures, OpenAPI stubs |
+| [packages/schema/](./packages/schema/) | JSON Schema contracts, fixtures, OpenAPI |
 | [packages/sdk-python/](./packages/sdk-python/) | Python instrumentation SDK |
 | [apps/server/](./apps/server/) | Ingest API + Postgres control plane |
 | [apps/cli/](./apps/cli/) | `sentinel` developer CLI |
-| [apps/web/](./apps/web/) | Run exploration web UI |
+| [apps/web/](./apps/web/) | Run exploration + benchmark leaderboard UI |
 | [examples/hello-trace/](./examples/hello-trace/) | File-export quickstart |
+| [examples/benchmark-smoke/](./examples/benchmark-smoke/) | Benchmark matrix smoke walkthrough |
 | [docs/adr/](./docs/adr/) | Architecture Decision Records |
 | [docs/diagrams/](./docs/diagrams/) | Mermaid architecture diagrams |
-| [docs/phases/](./docs/phases/) | Per-phase scope notes |
 
 ---
 
 ## Status
 
-**Phase 8 — Benchmarking (complete on branch `feat/benchmarking`)**
+**Current capabilities**
 
 - Schema: [`packages/schema`](./packages/schema/)
 - Python SDK: [`packages/sdk-python`](./packages/sdk-python/)
-- Server: [`apps/server`](./apps/server/) (ingest + metrics + evaluation + benchmarks)
+- Server: [`apps/server`](./apps/server/) (ingest, metrics, evaluation, benchmarks)
 - CLI: [`apps/cli`](./apps/cli/)
 - Web UI: [`apps/web`](./apps/web/)
-- Example: [`examples/hello-trace`](./examples/hello-trace/), [`examples/benchmark-smoke`](./examples/benchmark-smoke/)
+- Examples: [`examples/hello-trace`](./examples/hello-trace/), [`examples/benchmark-smoke`](./examples/benchmark-smoke/)
 
 ### Dev setup (virtualenv)
 
@@ -144,12 +130,10 @@ Open http://localhost:5173 → project `proj_demo` → run `run_hello_001`.
 
 ## Suggested Contribution Workflow
 
-1. Open a feature branch for a single roadmap phase
-2. Implement only that phase’s scope
-3. Update docs when architecture or behavior changes
-4. Open a PR with the phase checklist completed
-
-See [ROADMAP.md](./ROADMAP.md) for phase order and suggested branch names.
+1. Open a focused feature branch
+2. Keep the change scoped and covered by tests
+3. Update package/app READMEs and ADRs when public behavior or contracts change
+4. Open a PR with a clear summary and test plan
 
 ---
 
