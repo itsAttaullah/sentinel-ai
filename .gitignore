@@ -30,6 +30,11 @@ htmlcov/
 .DS_Store
 Thumbs.db
 
+# Local / private planning docs (keep out of public remote)
+ROADMAP.md
+docs/architecture/
+docs/phases/
+
 # Local trace outputs
 examples/hello-trace/out/*.jsonl
 
