@@ -97,3 +97,43 @@ export type ProjectMetrics = {
   total_retries: number;
   attribution_ms_total: Record<string, number>;
 };
+
+export type BenchmarkSuite = {
+  benchmark_id: string;
+  version: string;
+  name: string;
+  description?: string | null;
+  definition: Record<string, unknown>;
+  created_at: string;
+};
+
+export type LeaderboardRow = {
+  rank: number;
+  dimensions_key: string;
+  dimensions: Record<string, unknown>;
+  cell_count: number;
+  scored_count: number;
+  pass_rate: number | null;
+  mean_score: number | null;
+  mean_wall_ms: number | null;
+  mean_cost_usd: number | null;
+  task_ids: string[];
+  run_ids: string[];
+};
+
+export type LeaderboardReport = {
+  benchmark_id: string;
+  benchmark_version: string;
+  name?: string;
+  cell_count: number;
+  group_count: number;
+  baseline_agent_version?: string | null;
+  leaderboard: LeaderboardRow[];
+  pairwise: Array<{
+    candidate: Record<string, unknown>;
+    baseline_agent_version: string;
+    delta_pass_rate: number | null;
+    delta_mean_score: number | null;
+    delta_mean_wall_ms: number | null;
+  }>;
+};

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { fetchHealth } from "./api/client";
 import { Layout } from "./components/Layout";
+import { BenchmarksPage } from "./pages/BenchmarksPage";
 import { ProjectsPage } from "./pages/ProjectsPage";
 import { RunDetailPage } from "./pages/RunDetailPage";
 import { RunsPage } from "./pages/RunsPage";
@@ -37,6 +38,14 @@ export default function App() {
       <Routes>
         <Route path="/" element={<ProjectsPage />} />
         <Route path="/projects/:projectId" element={<RunsPage />} />
+        <Route
+          path="/projects/:projectId/benchmarks"
+          element={<BenchmarksPage />}
+        />
+        <Route
+          path="/projects/:projectId/benchmarks/:benchmarkId"
+          element={<BenchmarksPage />}
+        />
         <Route
           path="/projects/:projectId/runs/:runId"
           element={<RunDetailPage />}

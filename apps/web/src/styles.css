@@ -426,3 +426,80 @@ select {
   font-size: 1rem;
   letter-spacing: -0.02em;
 }
+
+.text-link {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+  align-self: center;
+}
+
+.text-link:hover {
+  text-decoration: underline;
+}
+
+.suite-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.suite-list li + li {
+  border-top: 1px solid var(--line);
+}
+
+.suite-list a {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.suite-list a:hover strong {
+  color: var(--accent);
+}
+
+.table-wrap {
+  overflow-x: auto;
+  margin-top: 12px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.data-table th,
+.data-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.data-table th {
+  color: var(--ink-muted);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.filter {
+  display: grid;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+
+.filter input {
+  min-width: 160px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font: inherit;
+  background: #fff;
+}
