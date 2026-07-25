@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, Float, Index, Integer, String, Text, UniqueConstraint
+from sqlalchemy import Boolean, DateTime, Float, Index, Integer, String, Text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.types import JSON
@@ -147,4 +147,98 @@ class RunMetrics(Base):
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=utc_now, onupdate=utc_now, nullable=False
+    )
+
+
+class Evaluator(Base):
+    """Versioned evaluator definition (immutable per version)."""
+
+    __tablename__ = "evaluators"
+    __table_args__ = (
+        UniqueConstraint(
+            "project_id", "evaluator_id", "version", name="uq_evaluators_project_id_ver"
+        ),
+        Index("ix_evaluators_project", "project_id"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    project_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    evaluator_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    version: Mapped[str] = mapped_column(String(64), nullable=False)
+    kind: Mapped[str] = mapped_column(String(32), nullable=False)  # deterministic | judge
+    name: Mapped[str] = mapped_column(String(256), nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    config: Mapped[dict] = mapped_column(JsonType, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, nullable=False
+    )
+
+
+class Suite(Base):
+    """Versioned evaluation suite binding checks to evaluators."""
+
+    __tablename__ = "suites"
+    __table_args__ = (
+        UniqueConstraint("project_id", "suite_id", "version", name="uq_suites_project_id_ver"),
+        Index("ix_suites_project", "project_id"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    project_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    suite_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    version: Mapped[str] = mapped_column(String(64), nullable=False)
+    name: Mapped[str] = mapped_column(String(256), nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    definition: Mapped[dict] = mapped_column(JsonType, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, nullable=False
+    )
+
+
+class EvalJob(Base):
+    """One evaluation execution of a suite against a run."""
+
+    __tablename__ = "eval_jobs"
+    __table_args__ = (
+        Index("ix_eval_jobs_project_run", "project_id", "run_id"),
+        Index("ix_eval_jobs_suite", "project_id", "suite_id"),
+    )
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    project_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    suite_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    suite_version: Mapped[str] = mapped_column(String(64), nullable=False)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    status: Mapped[str] = mapped_column(String(32), nullable=False)
+    passed: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    summary: Mapped[dict | None] = mapped_column(JsonType, nullable=True)
+    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, nullable=False
+    )
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class Score(Base):
+    """Immutable score record for one evaluator on one run (via an eval job)."""
+
+    __tablename__ = "scores"
+    __table_args__ = (
+        Index("ix_scores_project_run", "project_id", "run_id"),
+        Index("ix_scores_eval_job", "eval_job_id"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    project_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    eval_job_id: Mapped[str] = mapped_column(String(64), nullable=False)
+    evaluator_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    evaluator_version: Mapped[str] = mapped_column(String(64), nullable=False)
+    evaluator_kind: Mapped[str] = mapped_column(String(32), nullable=False)
+    score_value: Mapped[float | None] = mapped_column(Float, nullable=True)
+    passed: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    rationale: Mapped[str | None] = mapped_column(Text, nullable=True)
+    details: Mapped[dict | None] = mapped_column(JsonType, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, nullable=False
     )
