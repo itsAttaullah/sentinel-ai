@@ -55,9 +55,9 @@ Derive per-run and rollup metrics: latency, tokens, estimated cost, retries, too
 
 Project switcher, run list filters, run detail timeline/waterfall, basic metric panels.
 
-### Phase 7 — Evaluation Engine
+### Phase 7 — Evaluation Engine *(complete)*
 
-Suite/evaluator registry; deterministic checks; optional LLM judge; immutable versioned scores.
+Suite/evaluator registry; deterministic checks; versioned judge evaluators; immutable score records.
 
 ### Phase 8 — Benchmarking
 

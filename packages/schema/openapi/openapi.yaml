@@ -6,9 +6,10 @@ info:
 
     Trace payloads MUST conform to `packages/schema/jsonschema/v1`.
 
-    **Implementation status:** Ingest, projects, runs, health, quarantine, and
-    derived metrics routes are implemented by `apps/server` (Phases 3–4).
-    Eval/benchmark routes remain stubs until later phases.
+    **Implementation status:** Ingest, projects, runs, health, quarantine,
+    derived metrics, and evaluation (evaluators/suites/evals/scores) are
+    implemented by `apps/server` (Phases 3–7). Benchmark routes remain stubs
+    until a later phase.
   version: 0.1.0
   contact:
     name: Sentinel AI Maintainers
@@ -247,11 +248,111 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /v1/projects/{project_id}/evaluators:
+    get:
+      tags: [evals]
+      summary: List evaluators for a project
+      operationId: listEvaluators
+      security:
+        - ApiKeyAuth: []
+        - {}
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Evaluator list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Evaluator"
+    post:
+      tags: [evals]
+      summary: Register a versioned evaluator (immutable version)
+      operationId: createEvaluator
+      security:
+        - ApiKeyAuth: []
+        - {}
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EvaluatorCreate"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Evaluator"
+        "400":
+          description: Invalid or duplicate version
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /v1/projects/{project_id}/suites:
+    get:
+      tags: [evals]
+      summary: List suites
+      operationId: listSuites
+      security:
+        - ApiKeyAuth: []
+        - {}
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Suite list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Suite"
+    post:
+      tags: [evals]
+      summary: Register a versioned suite
+      operationId: createSuite
+      security:
+        - ApiKeyAuth: []
+        - {}
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuiteCreate"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Suite"
+
   /v1/projects/{project_id}/evals:
     post:
       tags: [evals]
-      summary: Trigger evaluation for a run (stub)
-      description: Implemented in evaluation phase. Declared early for contract stability.
+      summary: Evaluate a run with a suite
+      description: |
+        Executes the suite synchronously against a stored run.
+        Creates immutable Score rows. Re-runs create new jobs/scores.
       operationId: createEvalJob
       security:
         - ApiKeyAuth: []
@@ -266,17 +367,65 @@ paths:
               $ref: "#/components/schemas/EvalJobCreate"
       responses:
         "202":
-          description: Eval job accepted
+          description: Eval job finished (succeeded or failed status)
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/EvalJob"
-        "501":
-          description: Not implemented yet
+        "400":
+          description: Invalid suite/run
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+
+  /v1/projects/{project_id}/evals/{job_id}:
+    get:
+      tags: [evals]
+      summary: Get eval job + scores
+      operationId: getEvalJob
+      security:
+        - ApiKeyAuth: []
+        - {}
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Eval job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvalJob"
+
+  /v1/projects/{project_id}/runs/{run_id}/scores:
+    get:
+      tags: [evals]
+      summary: List immutable scores for a run
+      operationId: listRunScores
+      security:
+        - ApiKeyAuth: []
+        - {}
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/RunId"
+      responses:
+        "200":
+          description: Scores
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Score"
 
   /v1/projects/{project_id}/benchmarks:
     post:
@@ -529,6 +678,8 @@ components:
           type: string
         suite_id:
           type: string
+        suite_version:
+          type: string
 
     EvalJob:
       type: object
@@ -537,9 +688,152 @@ components:
       properties:
         id:
           type: string
+        project_id:
+          type: string
+        suite_id:
+          type: string
+        suite_version:
+          type: string
+        run_id:
+          type: string
         status:
           type: string
           enum: [queued, running, succeeded, failed]
+        passed:
+          type: boolean
+          nullable: true
+        summary:
+          type: object
+          additionalProperties: true
+        scores:
+          type: array
+          items:
+            $ref: "#/components/schemas/Score"
+        error_message:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        finished_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    EvaluatorCreate:
+      type: object
+      required: [evaluator_id, version, kind, name, config]
+      additionalProperties: false
+      properties:
+        evaluator_id:
+          type: string
+        version:
+          type: string
+        kind:
+          type: string
+          enum: [deterministic, judge]
+        name:
+          type: string
+        description:
+          type: string
+        config:
+          type: object
+          additionalProperties: true
+
+    Evaluator:
+      type: object
+      required: [evaluator_id, version, kind, name, config]
+      additionalProperties: false
+      properties:
+        evaluator_id:
+          type: string
+        version:
+          type: string
+        kind:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        config:
+          type: object
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+
+    SuiteCreate:
+      type: object
+      required: [suite_id, version, name, definition]
+      additionalProperties: false
+      properties:
+        suite_id:
+          type: string
+        version:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        definition:
+          type: object
+          additionalProperties: true
+
+    Suite:
+      type: object
+      required: [suite_id, version, name, definition]
+      additionalProperties: false
+      properties:
+        suite_id:
+          type: string
+        version:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        definition:
+          type: object
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+
+    Score:
+      type: object
+      required: [id, run_id, evaluator_id, evaluator_version, passed]
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+        project_id:
+          type: string
+        run_id:
+          type: string
+        eval_job_id:
+          type: string
+        evaluator_id:
+          type: string
+        evaluator_version:
+          type: string
+        evaluator_kind:
+          type: string
+        score_value:
+          type: number
+          nullable: true
+        passed:
+          type: boolean
+        rationale:
+          type: string
+          nullable: true
+        details:
+          type: object
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
 
     BenchmarkJobCreate:
       type: object
