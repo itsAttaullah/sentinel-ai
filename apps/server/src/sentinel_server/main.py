@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from sentinel_server import __version__
-from sentinel_server.api import health, ingest, projects
+from sentinel_server.api import evals, health, ingest, projects
 from sentinel_server.db import init_db
 
 
@@ -46,6 +46,7 @@ _add_cors(app)
 app.include_router(health.router)
 app.include_router(ingest.router)
 app.include_router(projects.router)
+app.include_router(evals.router)
 
 
 @app.exception_handler(RequestValidationError)
@@ -81,5 +82,6 @@ def create_app(*, database_url: str | None = None) -> FastAPI:
     test_app.include_router(health.router)
     test_app.include_router(ingest.router)
     test_app.include_router(projects.router)
+    test_app.include_router(evals.router)
     test_app.add_exception_handler(RequestValidationError, validation_exception_handler)
     return test_app
