@@ -37,6 +37,8 @@ docs/phases/
 
 # Local trace outputs
 examples/hello-trace/out/*.jsonl
+examples/adapter-custom/out/
+examples/adapter-langgraph/out/
 
 # Node
 node_modules/
