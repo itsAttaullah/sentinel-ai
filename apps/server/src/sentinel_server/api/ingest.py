@@ -8,10 +8,11 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
-from sentinel_server.auth import require_auth
+from sentinel_server.auth import require_ingest
 from sentinel_server.config import get_settings
 from sentinel_server.db import get_db
 from sentinel_server.services.ingest import persist_ingest_batch, quarantine
+from sentinel_server.services.redaction import redact_ingest_batch
 from sentinel_server.validation import (
     SchemaValidationError,
     assert_project_consistency,
@@ -25,7 +26,7 @@ router = APIRouter(prefix="/v1", tags=["ingest"])
 async def post_ingest(
     request: Request,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_ingest),
 ) -> dict[str, Any]:
     settings = get_settings()
     body = await request.body()
@@ -91,10 +92,14 @@ async def post_ingest(
             },
         ) from exc
 
+    settings = get_settings()
+    payload = redact_ingest_batch(payload, mode=settings.redaction_mode)
+
     counts = persist_ingest_batch(db, payload)
     return {
         "accepted": True,
         "project_id": payload["project_id"],
         "batch_id": payload.get("batch_id"),
         "counts": counts,
+        "redaction_mode": settings.redaction_mode,
     }

@@ -9,9 +9,11 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from sentinel_server.auth import require_auth
+from sentinel_server.auth import require_read, require_write
+from sentinel_server.config import get_settings
 from sentinel_server.db import get_db
 from sentinel_server.services import queries
+from sentinel_server.services.redaction import redact_run_detail
 
 router = APIRouter(prefix="/v1", tags=["projects"])
 
@@ -32,7 +34,7 @@ class ProjectOut(BaseModel):
 @router.get("/projects")
 def list_projects(
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_read),
 ) -> dict[str, list[dict[str, Any]]]:
     items = queries.list_projects(db)
     return {
@@ -52,7 +54,7 @@ def list_projects(
 def create_project(
     body: ProjectCreate,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_write),
 ) -> dict[str, Any]:
     try:
         project = queries.create_project(
@@ -80,7 +82,7 @@ def create_project(
 def get_project(
     project_id: str,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_read),
 ) -> dict[str, Any]:
     project = queries.get_project(db, project_id)
     if project is None:
@@ -109,7 +111,7 @@ def list_runs(
     tag: str | None = None,
     limit: int = Query(default=50, ge=1, le=200),
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_read),
 ) -> dict[str, Any]:
     if queries.get_project(db, project_id) is None:
         raise HTTPException(
@@ -166,7 +168,7 @@ def get_run(
     run_id: str,
     include: str = Query(default="spans,events,metrics"),
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_read),
 ) -> dict[str, Any]:
     parts = {part.strip() for part in include.split(",") if part.strip()}
     detail = queries.get_run_detail(
@@ -187,7 +189,7 @@ def get_run(
                 }
             },
         )
-    return detail
+    return redact_run_detail(detail, mode=get_settings().redaction_mode)
 
 
 @router.post("/projects/{project_id}/runs/{run_id}/metrics/recompute")
@@ -195,7 +197,7 @@ def recompute_run_metrics(
     project_id: str,
     run_id: str,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_write),
 ) -> dict[str, Any]:
     metrics = queries.recompute_metrics_for_run(db, project_id, run_id)
     if metrics is None:
@@ -215,7 +217,7 @@ def recompute_run_metrics(
 def get_project_metrics(
     project_id: str,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_read),
 ) -> dict[str, Any]:
     if queries.get_project(db, project_id) is None:
         raise HTTPException(
@@ -234,7 +236,7 @@ def get_project_metrics(
 def get_quarantine(
     limit: int = Query(default=50, ge=1, le=200),
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_read),
 ) -> dict[str, Any]:
     items = queries.list_quarantine(db, limit=limit)
     return {

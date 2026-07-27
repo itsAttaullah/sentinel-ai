@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from sentinel_server.auth import require_auth
+from sentinel_server.auth import require_read, require_write
 from sentinel_server.db import get_db
 from sentinel_server.services import evaluation as evalsvc
 from sentinel_server.services import queries
@@ -58,7 +58,7 @@ def create_evaluator(
     project_id: str,
     body: EvaluatorCreate,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_write),
 ) -> dict[str, Any]:
     _require_project(db, project_id)
     try:
@@ -84,7 +84,7 @@ def create_evaluator(
 def list_evaluators(
     project_id: str,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_read),
 ) -> dict[str, Any]:
     _require_project(db, project_id)
     items = evalsvc.list_evaluators(db, project_id)
@@ -97,7 +97,7 @@ def get_evaluator_versions(
     evaluator_id: str,
     version: str | None = Query(default=None),
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_read),
 ) -> dict[str, Any]:
     _require_project(db, project_id)
     if version:
@@ -136,7 +136,7 @@ def create_suite(
     project_id: str,
     body: SuiteCreate,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_write),
 ) -> dict[str, Any]:
     _require_project(db, project_id)
     try:
@@ -161,7 +161,7 @@ def create_suite(
 def list_suites(
     project_id: str,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_read),
 ) -> dict[str, Any]:
     _require_project(db, project_id)
     items = evalsvc.list_suites(db, project_id)
@@ -174,7 +174,7 @@ def get_suite(
     suite_id: str,
     version: str | None = Query(default=None),
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_read),
 ) -> dict[str, Any]:
     _require_project(db, project_id)
     row = evalsvc.get_suite(db, project_id, suite_id, version)
@@ -196,7 +196,7 @@ def create_eval_job(
     project_id: str,
     body: EvalJobCreate,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_write),
 ) -> dict[str, Any]:
     """Run a suite against a run. Executes synchronously; returns completed job."""
     _require_project(db, project_id)
@@ -222,7 +222,7 @@ def get_eval_job(
     project_id: str,
     job_id: str,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_read),
 ) -> dict[str, Any]:
     _require_project(db, project_id)
     job = evalsvc.get_eval_job(db, project_id, job_id)
@@ -245,7 +245,7 @@ def list_run_scores(
     project_id: str,
     run_id: str,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_read),
 ) -> dict[str, Any]:
     _require_project(db, project_id)
     if queries.get_run_detail(db, project_id, run_id, include_spans=False, include_events=False, include_metrics=False) is None:
