@@ -24,9 +24,18 @@ sentinel --help
 | `sentinel runs list` | List runs for the configured project |
 | `sentinel runs get RUN_ID` | Fetch run detail (spans/events/metrics) |
 | `sentinel metrics` | Project metrics aggregates |
+| `sentinel compare` | Diff baseline vs candidate metrics/scores |
+| `sentinel gate` | CI gate with exit codes `0`/`1`/`2` |
 | `sentinel serve` | Print how to start the local stack |
 
 All commands support `--json` for machine-readable output (CI-friendly).
+
+### CI gate example
+
+```powershell
+sentinel gate --baseline-version 0.1.0 --candidate-version 0.2.0 --json
+# exit 0 = pass, 1 = regressions, 2 = error
+```
 
 ## Config resolution (highest wins)
 

@@ -81,6 +81,11 @@ def test_resolve_config_env_overrides_file(tmp_path: Path, monkeypatch) -> None:
     assert cfg.project_id == "from_env"
 
 
+def test_gate_requires_selectors() -> None:
+    result = runner.invoke(app, ["gate", "--json"])
+    assert result.exit_code != 0
+
+
 def test_serve_prints_guidance() -> None:
     result = runner.invoke(app, ["serve", "--json"])
     assert result.exit_code == 0

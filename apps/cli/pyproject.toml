@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sentinel-cli"
-version = "0.1.0"
-description = "Sentinel AI developer CLI for init, upload, and query workflows."
+version = "0.2.0"
+description = "Sentinel AI developer CLI for init, upload, query, and CI gates."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "License TBD" }
