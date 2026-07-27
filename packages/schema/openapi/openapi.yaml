@@ -12,9 +12,9 @@ info:
   version: 0.1.0
   contact:
     name: Sentinel AI Maintainers
-  license:
-    name: License TBD
-    url: https://github.com/itsAttaullah/sentinel-ai
+    license:
+      name: Apache-2.0
+      url: https://www.apache.org/licenses/LICENSE-2.0
 
 servers:
   - url: http://localhost:8080

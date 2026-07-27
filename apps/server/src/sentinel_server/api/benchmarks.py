@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from sentinel_server.auth import require_auth
+from sentinel_server.auth import require_read, require_write
 from sentinel_server.db import get_db
 from sentinel_server.services import benchmarking as benchsvc
 from sentinel_server.services import queries
@@ -71,7 +71,7 @@ def create_benchmark_suite(
     project_id: str,
     body: BenchmarkSuiteCreate,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_write),
 ) -> dict[str, Any]:
     _require_project(db, project_id)
     try:
@@ -96,7 +96,7 @@ def create_benchmark_suite(
 def list_benchmark_suites(
     project_id: str,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_read),
 ) -> dict[str, Any]:
     _require_project(db, project_id)
     items = benchsvc.list_benchmark_suites(db, project_id)
@@ -109,7 +109,7 @@ def get_benchmark_suite(
     benchmark_id: str,
     version: str | None = Query(default=None),
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_read),
 ) -> dict[str, Any]:
     _require_project(db, project_id)
     row = benchsvc.get_benchmark_suite(db, project_id, benchmark_id, version)
@@ -135,7 +135,7 @@ def register_benchmark_cell(
     benchmark_id: str,
     body: BenchmarkCellCreate,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_write),
 ) -> dict[str, Any]:
     _require_project(db, project_id)
     try:
@@ -166,7 +166,7 @@ def list_benchmark_cells(
     benchmark_id: str,
     version: str | None = Query(default=None),
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_read),
 ) -> dict[str, Any]:
     _require_project(db, project_id)
     suite = benchsvc.get_benchmark_suite(db, project_id, benchmark_id, version)
@@ -191,7 +191,7 @@ def get_leaderboard(
     version: str | None = Query(default=None),
     baseline_agent_version: str | None = Query(default=None),
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_read),
 ) -> dict[str, Any]:
     _require_project(db, project_id)
     suite = benchsvc.get_benchmark_suite(db, project_id, benchmark_id, version)
@@ -220,7 +220,7 @@ def create_benchmark_job(
     project_id: str,
     body: BenchmarkJobCreate,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_write),
 ) -> dict[str, Any]:
     """Build a comparison report over registered cells (sync)."""
     _require_project(db, project_id)
@@ -246,7 +246,7 @@ def get_benchmark_job(
     project_id: str,
     job_id: str,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_read),
 ) -> dict[str, Any]:
     _require_project(db, project_id)
     job = benchsvc.get_benchmark_job(db, project_id, job_id)

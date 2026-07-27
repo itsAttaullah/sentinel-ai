@@ -4,11 +4,11 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sentinel-server"
-version = "0.5.0"
+version = "1.0.0"
 description = "Sentinel AI ingest gateway and control-plane API (self-hosted)."
 readme = "README.md"
 requires-python = ">=3.11"
-license = { text = "License TBD" }
+license = { text = "Apache-2.0" }
 dependencies = [
   "fastapi>=0.115.0",
   "uvicorn[standard]>=0.32.0",

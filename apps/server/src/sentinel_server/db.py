@@ -18,9 +18,19 @@ SessionLocal: sessionmaker[Session] | None = None
 def setup_engine(database_url: str | None = None) -> Engine:
     """Create (or recreate) the global engine/session factory."""
     global engine, SessionLocal
-    url = database_url or get_settings().database_url
+    settings = get_settings()
+    url = database_url or settings.database_url
     connect_args = {"check_same_thread": False} if url.startswith("sqlite") else {}
-    engine = create_engine(url, pool_pre_ping=True, connect_args=connect_args)
+    engine_kwargs: dict = {"pool_pre_ping": True, "connect_args": connect_args}
+    if not url.startswith("sqlite"):
+        engine_kwargs.update(
+            {
+                "pool_size": settings.db_pool_size,
+                "max_overflow": settings.db_max_overflow,
+                "pool_timeout": settings.db_pool_timeout,
+            }
+        )
+    engine = create_engine(url, **engine_kwargs)
     SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
     return engine
 

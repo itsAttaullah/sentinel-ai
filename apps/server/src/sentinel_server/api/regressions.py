@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from sentinel_server.auth import require_auth
+from sentinel_server.auth import require_read, require_write
 from sentinel_server.db import get_db
 from sentinel_server.services import queries
 from sentinel_server.services import regression as regsvc
@@ -61,7 +61,7 @@ def create_policy(
     project_id: str,
     body: PolicyCreate,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_write),
 ) -> dict[str, Any]:
     _require_project(db, project_id)
     try:
@@ -86,7 +86,7 @@ def create_policy(
 def list_policies(
     project_id: str,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_read),
 ) -> dict[str, Any]:
     _require_project(db, project_id)
     items = regsvc.list_policies(db, project_id)
@@ -99,7 +99,7 @@ def get_policy(
     policy_id: str,
     version: str | None = Query(default=None),
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_read),
 ) -> dict[str, Any]:
     _require_project(db, project_id)
     row = regsvc.get_policy(db, project_id, policy_id, version)
@@ -124,7 +124,7 @@ def create_baseline(
     project_id: str,
     body: BaselineCreate,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_write),
 ) -> dict[str, Any]:
     _require_project(db, project_id)
     try:
@@ -149,7 +149,7 @@ def create_baseline(
 def list_baselines(
     project_id: str,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_read),
 ) -> dict[str, Any]:
     _require_project(db, project_id)
     items = regsvc.list_baselines(db, project_id)
@@ -164,7 +164,7 @@ def compare_versions(
     project_id: str,
     body: RegressionRequest,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_write),
 ) -> dict[str, Any]:
     """Diff baseline vs candidate metrics/scores (no pass/fail)."""
     _require_project(db, project_id)
@@ -186,7 +186,7 @@ def gate_versions(
     project_id: str,
     body: RegressionRequest,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_write),
 ) -> dict[str, Any]:
     """
     Apply a threshold policy and return pass/fail.
@@ -213,7 +213,7 @@ def get_regression_job(
     project_id: str,
     job_id: str,
     db: Session = Depends(get_db),
-    _: None = Depends(require_auth),
+    _: None = Depends(require_read),
 ) -> dict[str, Any]:
     _require_project(db, project_id)
     job = regsvc.get_regression_job(db, project_id, job_id)

@@ -14,7 +14,7 @@ def _default_schema_dir() -> Path:
     """Resolve monorepo schema dir when running from source or Compose."""
     here = Path(__file__).resolve()
     candidates = [
-        here.parents[4] / "packages" / "schema" / "jsonschema" / "v1",  # .../apps/server/src/sentinel_server
+        here.parents[4] / "packages" / "schema" / "jsonschema" / "v1",
         here.parents[3] / "packages" / "schema" / "jsonschema" / "v1",
         Path("/schema/jsonschema/v1"),
     ]
@@ -38,8 +38,14 @@ class Settings(BaseSettings):
     pricing_path: Path | None = None
     auth_mode: Literal["local", "api_key"] = "local"
     api_keys: str = ""
+    # key:scope|scope,...  e.g. k_admin:admin,k_ingest:ingest,k_read:read
+    api_key_scopes: str = ""
+    redaction_mode: Literal["off", "default", "strict"] = "default"
     max_body_bytes: int = 10 * 1024 * 1024
-    app_version: str = "0.5.0"
+    db_pool_size: int = 5
+    db_max_overflow: int = 10
+    db_pool_timeout: int = 30
+    app_version: str = "1.0.0"
 
     @property
     def api_key_set(self) -> set[str]:

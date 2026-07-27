@@ -1,33 +1,32 @@
 # ADR-0005: License & Open-Source Posture
 
-- **Status:** Proposed
-- **Date:** 2026-07-23
+- **Status:** Accepted
+- **Date:** 2026-07-27
+- **Deciders:** Maintainers (Phase 11 hardening)
 
 ## Context
 
 Sentinel AI is intended as an open-source platform. License choice affects adoption by companies, ability to offer a hosted commercial edition, and contributor expectations.
 
-## Decision (Proposed)
+## Decision
 
-Defer final license file until maintainers confirm go-to-market posture. Recommended default:
-
-- **Apache-2.0** for core, schema, SDKs, and official adapters
+Use **Apache-2.0** for core, schema, SDKs, CLI, server, and official adapters.
 
 Rationale: patent grant + broad corporate acceptance; compatible with most agent ecosystem libraries.
 
-Alternative: **MIT** if maximum permissiveness is preferred and patent grant is not required.
+The canonical license text is the repository root [`LICENSE`](../../LICENSE) file.
 
 ## Consequences
 
 ### Positive
 
-- Clear signal to contributors once chosen
-- Apache-2.0 eases enterprise legal review
+- Clear signal to contributors and enterprises
+- Apache-2.0 eases legal review
 
 ### Negative
 
-- Delay may confuse early visitors (mitigate via README note)
+- Slightly more attribution ceremony than MIT
 
-### Non-decision
+### Follow-ups
 
-Trademark, CLA/DCO, and governance model to be decided before public launch.
+- Trademark / CLA / governance remain optional and can be added later without relicensing
