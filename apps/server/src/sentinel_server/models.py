@@ -320,3 +320,72 @@ class BenchmarkJob(Base):
         DateTime(timezone=True), default=utc_now, nullable=False
     )
     finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class RegressionPolicy(Base):
+    """Versioned threshold policy for CI regression gates."""
+
+    __tablename__ = "regression_policies"
+    __table_args__ = (
+        UniqueConstraint(
+            "project_id", "policy_id", "version", name="uq_regression_policies_id_ver"
+        ),
+        Index("ix_regression_policies_project", "project_id"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    project_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    policy_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    version: Mapped[str] = mapped_column(String(64), nullable=False)
+    name: Mapped[str] = mapped_column(String(256), nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    definition: Mapped[dict] = mapped_column(JsonType, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, nullable=False
+    )
+
+
+class BaselinePin(Base):
+    """Pinned baseline reference for reproducible gates."""
+
+    __tablename__ = "baseline_pins"
+    __table_args__ = (
+        UniqueConstraint(
+            "project_id", "baseline_id", "version", name="uq_baseline_pins_id_ver"
+        ),
+        Index("ix_baseline_pins_project", "project_id"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    project_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    baseline_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    version: Mapped[str] = mapped_column(String(64), nullable=False)
+    name: Mapped[str] = mapped_column(String(256), nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    reference: Mapped[dict] = mapped_column(JsonType, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, nullable=False
+    )
+
+
+class RegressionJob(Base):
+    """Immutable compare/gate report."""
+
+    __tablename__ = "regression_jobs"
+    __table_args__ = (Index("ix_regression_jobs_project", "project_id"),)
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    project_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    kind: Mapped[str] = mapped_column(String(32), nullable=False)  # compare | gate
+    policy_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    policy_version: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    baseline_ref: Mapped[dict] = mapped_column(JsonType, nullable=False)
+    candidate_ref: Mapped[dict] = mapped_column(JsonType, nullable=False)
+    status: Mapped[str] = mapped_column(String(32), nullable=False)
+    passed: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    report: Mapped[dict | None] = mapped_column(JsonType, nullable=True)
+    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, nullable=False
+    )
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
