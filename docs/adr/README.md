@@ -20,7 +20,7 @@ Each ADR uses:
 | [0002](./0002-storage-strategy.md) | Storage Strategy (Postgres + Object Store) | Accepted |
 | [0003](./0003-modular-monolith.md) | Modular Monolith + Workers | Accepted |
 | [0004](./0004-sdk-first-instrumentation.md) | SDK-First Instrumentation | Accepted |
-| [0005](./0005-license-and-open-source-posture.md) | License & Open-Source Posture | Proposed |
+| [0005](./0005-license-and-open-source-posture.md) | License & Open-Source Posture | Accepted |
 | [0006](./0006-evaluation-model.md) | Explicit Versioned Evaluation Model | Accepted |
 | [0007](./0007-framework-adapters-as-plugins.md) | Framework Adapters as Plugins | Accepted |
 
