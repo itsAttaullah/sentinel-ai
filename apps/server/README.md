@@ -64,8 +64,29 @@ uvicorn sentinel_server.main:app --reload --port 8080
 
 | Mode | Env | Behavior |
 |---|---|---|
-| `local` (default) | `SENTINEL_AUTH_MODE=local` | No API key required |
-| `api_key` | `SENTINEL_AUTH_MODE=api_key` + `SENTINEL_API_KEYS=key1,key2` | Require `X-Sentinel-Api-Key` |
+| `local` (default) | `SENTINEL_AUTH_MODE=local` | No API key required (dev only) |
+| `api_key` | `SENTINEL_AUTH_MODE=api_key` + `SENTINEL_API_KEYS=...` | Require `X-Sentinel-Api-Key` |
+
+### Key scopes (optional)
+
+`SENTINEL_API_KEY_SCOPES=k_admin:admin,k_ingest:ingest,k_read:read`
+
+| Scope | Access |
+|---|---|
+| `admin` | Everything (default if a key has no scope entry) |
+| `ingest` | `POST /v1/ingest` (+ read) |
+| `read` | GET APIs |
+| `write` | Mutating APIs (projects, evals, benchmarks, gates, …) |
+
+## Redaction
+
+`SENTINEL_REDACTION_MODE=off|default|strict` (default: `default`)
+
+- Applied on **ingest** (stored payloads) and again on **run detail** reads
+- Masks sensitive attribute keys, LLM message/response content, and secret-like strings
+- `strict` replaces LLM messages/tool I/O wholesale
+
+Ops: [backup/restore](../../docs/ops/backup-and-restore.md) · [release process](../../docs/ops/release-process.md)
 
 ---
 
@@ -125,7 +146,12 @@ CLI: `sentinel gate --baseline-version 0.1.0 --candidate-version 0.2.0`
 | `SENTINEL_PRICING_PATH` | auto-detect `apps/server/pricing/default.json` | Cost estimate table |
 | `SENTINEL_AUTH_MODE` | `local` | `local` \| `api_key` |
 | `SENTINEL_API_KEYS` | empty | Comma-separated keys |
+| `SENTINEL_API_KEY_SCOPES` | empty | `key:scope\|scope,...` (default scope `admin`) |
+| `SENTINEL_REDACTION_MODE` | `default` | `off` \| `default` \| `strict` |
 | `SENTINEL_MAX_BODY_BYTES` | `10485760` (10 MiB) | Ingest body limit |
+| `SENTINEL_DB_POOL_SIZE` | `5` | SQLAlchemy pool size (non-SQLite) |
+| `SENTINEL_DB_MAX_OVERFLOW` | `10` | Pool overflow |
+| `SENTINEL_DB_POOL_TIMEOUT` | `30` | Pool checkout timeout (seconds) |
 
 ---
 
@@ -135,3 +161,4 @@ CLI: `sentinel gate --baseline-version 0.1.0 --candidate-version 0.2.0`
 - Remote hosted LLM judge HTTP provider
 - Full visual matrix designer UI
 - Statistical significance tests for diffs
+- Hosted multi-tenant SaaS control plane

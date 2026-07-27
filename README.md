@@ -65,17 +65,22 @@ Sentinel AI turns agent execution into structured telemetry, reproducible benchm
 | [examples/benchmark-smoke/](./examples/benchmark-smoke/) | Benchmark matrix smoke walkthrough |
 | [docs/adr/](./docs/adr/) | Architecture Decision Records |
 | [docs/diagrams/](./docs/diagrams/) | Mermaid architecture diagrams |
+| [docs/ops/](./docs/ops/) | Backup/restore and release process |
+| [CONTRIBUTING.md](./CONTRIBUTING.md) | How to contribute |
+| [SECURITY.md](./SECURITY.md) | Vulnerability reporting |
+| [CHANGELOG.md](./CHANGELOG.md) | Release notes |
+| [LICENSE](./LICENSE) | Apache License 2.0 |
 
 ---
 
 ## Status
 
-**Current capabilities**
+**Current capabilities (v1.0.0)**
 
 - Schema: [`packages/schema`](./packages/schema/)
 - Python SDK: [`packages/sdk-python`](./packages/sdk-python/)
 - Adapters: [`packages/adapters`](./packages/adapters/) (custom reference + LangGraph)
-- Server: [`apps/server`](./apps/server/) (ingest, metrics, evaluation, benchmarks, regression gates)
+- Server: [`apps/server`](./apps/server/) (ingest, metrics, evaluation, benchmarks, regression gates, redaction + scoped auth)
 - CLI: [`apps/cli`](./apps/cli/) (`upload`, `compare`, `gate`, …)
 - Web UI: [`apps/web`](./apps/web/)
 - Examples: [`examples/hello-trace`](./examples/hello-trace/), [`examples/adapter-custom`](./examples/adapter-custom/), [`examples/benchmark-smoke`](./examples/benchmark-smoke/)
@@ -133,13 +138,10 @@ Open http://localhost:5173 → project `proj_demo` → run `run_hello_001`.
 
 ## Suggested Contribution Workflow
 
-1. Open a focused feature branch
-2. Keep the change scoped and covered by tests
-3. Update package/app READMEs and ADRs when public behavior or contracts change
-4. Open a PR with a clear summary and test plan
+See [CONTRIBUTING.md](./CONTRIBUTING.md). Release tagging: [docs/ops/release-process.md](./docs/ops/release-process.md).
 
 ---
 
 ## License
 
-License to be selected before the first public release (recommended candidates: Apache-2.0 or MIT). See [ADR-0005](./docs/adr/0005-license-and-open-source-posture.md).
+Licensed under the [Apache License 2.0](./LICENSE). See [ADR-0005](./docs/adr/0005-license-and-open-source-posture.md).
