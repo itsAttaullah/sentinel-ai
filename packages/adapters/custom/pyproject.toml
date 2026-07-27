@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sentinel-adapter-custom"
+version = "0.1.0"
+description = "Reference Sentinel adapter for hand-rolled / custom agent runtimes."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "License TBD" }
+authors = [{ name = "Sentinel AI Contributors" }]
+dependencies = [
+  "sentinel-ai>=0.1.0",
+  "sentinel-adapter-base>=0.1.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.entry-points."sentinel.adapters"]
+custom = "sentinel_adapter_custom:CustomAdapter"
+
+[project.urls]
+Homepage = "https://github.com/itsAttaullah/sentinel-ai"
+Repository = "https://github.com/itsAttaullah/sentinel-ai"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

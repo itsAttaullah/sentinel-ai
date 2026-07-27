@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sentinel-adapter-base"
+version = "0.1.0"
+description = "Plugin protocol and metadata for Sentinel AI framework adapters."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "License TBD" }
+authors = [{ name = "Sentinel AI Contributors" }]
+dependencies = [
+  "sentinel-ai>=0.1.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.urls]
+Homepage = "https://github.com/itsAttaullah/sentinel-ai"
+Repository = "https://github.com/itsAttaullah/sentinel-ai"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

@@ -56,10 +56,12 @@ Sentinel AI turns agent execution into structured telemetry, reproducible benchm
 |---|---|
 | [packages/schema/](./packages/schema/) | JSON Schema contracts, fixtures, OpenAPI |
 | [packages/sdk-python/](./packages/sdk-python/) | Python instrumentation SDK |
+| [packages/adapters/](./packages/adapters/) | Framework adapters (plugin packages) |
 | [apps/server/](./apps/server/) | Ingest API + Postgres control plane |
 | [apps/cli/](./apps/cli/) | `sentinel` developer CLI |
 | [apps/web/](./apps/web/) | Run exploration + benchmark leaderboard UI |
 | [examples/hello-trace/](./examples/hello-trace/) | File-export quickstart |
+| [examples/adapter-custom/](./examples/adapter-custom/) | Custom reference adapter example |
 | [examples/benchmark-smoke/](./examples/benchmark-smoke/) | Benchmark matrix smoke walkthrough |
 | [docs/adr/](./docs/adr/) | Architecture Decision Records |
 | [docs/diagrams/](./docs/diagrams/) | Mermaid architecture diagrams |
@@ -72,10 +74,11 @@ Sentinel AI turns agent execution into structured telemetry, reproducible benchm
 
 - Schema: [`packages/schema`](./packages/schema/)
 - Python SDK: [`packages/sdk-python`](./packages/sdk-python/)
+- Adapters: [`packages/adapters`](./packages/adapters/) (custom reference + LangGraph)
 - Server: [`apps/server`](./apps/server/) (ingest, metrics, evaluation, benchmarks)
 - CLI: [`apps/cli`](./apps/cli/)
 - Web UI: [`apps/web`](./apps/web/)
-- Examples: [`examples/hello-trace`](./examples/hello-trace/), [`examples/benchmark-smoke`](./examples/benchmark-smoke/)
+- Examples: [`examples/hello-trace`](./examples/hello-trace/), [`examples/adapter-custom`](./examples/adapter-custom/), [`examples/benchmark-smoke`](./examples/benchmark-smoke/)
 
 ### Dev setup (virtualenv)
 

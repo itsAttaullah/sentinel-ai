@@ -31,3 +31,11 @@ Agent frameworks evolve quickly and pull heavy dependencies. Embedding them in t
 ### Target adapter list (non-binding order)
 
 Custom → ForgeMind / Research Agent → OpenAI Agents SDK → LangGraph → CrewAI → PydanticAI → others
+
+### Concrete locations (Phase 9)
+
+- Plugin protocol: `packages/adapters/base` (`sentinel-adapter-base`)
+- Reference custom adapter: `packages/adapters/custom`
+- LangGraph adapter: `packages/adapters/langgraph` (optional `langchain-core`)
+- Conformance suite: `packages/adapters/conformance`
+- Discovery entry-point group: `sentinel.adapters`

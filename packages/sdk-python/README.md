@@ -62,6 +62,8 @@ print(run.run_id)
 
 See [`examples/hello-trace`](../../examples/hello-trace) for a full walkthrough.
 
+Framework adapters (separate packages, ADR-0007): see [`packages/adapters`](../adapters/).
+
 ---
 
 ## Exporters
