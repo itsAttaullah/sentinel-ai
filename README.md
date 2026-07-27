@@ -75,8 +75,8 @@ Sentinel AI turns agent execution into structured telemetry, reproducible benchm
 - Schema: [`packages/schema`](./packages/schema/)
 - Python SDK: [`packages/sdk-python`](./packages/sdk-python/)
 - Adapters: [`packages/adapters`](./packages/adapters/) (custom reference + LangGraph)
-- Server: [`apps/server`](./apps/server/) (ingest, metrics, evaluation, benchmarks)
-- CLI: [`apps/cli`](./apps/cli/)
+- Server: [`apps/server`](./apps/server/) (ingest, metrics, evaluation, benchmarks, regression gates)
+- CLI: [`apps/cli`](./apps/cli/) (`upload`, `compare`, `gate`, …)
 - Web UI: [`apps/web`](./apps/web/)
 - Examples: [`examples/hello-trace`](./examples/hello-trace/), [`examples/adapter-custom`](./examples/adapter-custom/), [`examples/benchmark-smoke`](./examples/benchmark-smoke/)
 

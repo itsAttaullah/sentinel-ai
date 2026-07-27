@@ -103,6 +103,19 @@ See also [`examples/benchmark-smoke/`](../../examples/benchmark-smoke/).
 
 ---
 
+## Regression & CI gates
+
+Compare agent versions or runs and fail CI when thresholds are exceeded.
+
+- `POST /v1/projects/{id}/regression-policies` — versioned threshold policies
+- `POST /v1/projects/{id}/baselines` — pin a baseline (`agent_version` or `run_ids`)
+- `POST /v1/projects/{id}/regressions/compare` — diff only
+- `POST /v1/projects/{id}/regressions/gate` — pass/fail + `exit_code_hint` (`0`/`1`/`2`)
+
+CLI: `sentinel gate --baseline-version 0.1.0 --candidate-version 0.2.0`
+
+---
+
 ## Environment
 
 | Variable | Default | Meaning |
@@ -121,4 +134,4 @@ See also [`examples/benchmark-smoke/`](../../examples/benchmark-smoke/).
 - Redis queue / separate worker processes
 - Remote hosted LLM judge HTTP provider
 - Full visual matrix designer UI
-- Statistical significance / CI regression gates
+- Statistical significance tests for diffs
