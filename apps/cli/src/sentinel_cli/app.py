@@ -295,6 +295,155 @@ def metrics_cmd(
     emit(data, as_json=json_out, human=human)
 
 
+@app.command("compare")
+def compare_cmd(
+    baseline_version: Optional[str] = typer.Option(None, "--baseline-version"),
+    candidate_version: Optional[str] = typer.Option(None, "--candidate-version"),
+    baseline_run: Optional[str] = typer.Option(None, "--baseline-run"),
+    candidate_run: Optional[str] = typer.Option(None, "--candidate-run"),
+    baseline_id: Optional[str] = typer.Option(None, "--baseline-id"),
+    project_id: Optional[str] = typer.Option(None, "--project-id"),
+    api_url: Optional[str] = typer.Option(None, "--api-url"),
+    api_key: Optional[str] = typer.Option(None, "--api-key"),
+    json_out: bool = typer.Option(False, "--json"),
+) -> None:
+    """Diff metrics/scores between a baseline and candidate (no pass/fail)."""
+    cfg = resolve_config(api_url=api_url, project_id=project_id, api_key=api_key)
+    try:
+        baseline = _build_ref(
+            version=baseline_version,
+            run_id=baseline_run,
+            baseline_id=baseline_id,
+            allow_baseline_id=True,
+        )
+        candidate = _build_ref(
+            version=candidate_version,
+            run_id=candidate_run,
+            allow_baseline_id=False,
+        )
+    except ValueError as exc:
+        fail(str(exc), as_json=json_out)
+    try:
+        with SentinelClient(cfg) as client:
+            data = client.compare_regression(
+                cfg.project_id, {"baseline": baseline, "candidate": candidate}
+            )
+    except SentinelApiError as exc:
+        fail(str(exc), as_json=json_out, details=exc.body)
+    except Exception as exc:  # noqa: BLE001
+        fail(str(exc), as_json=json_out)
+
+    report = data.get("report") or {}
+    diff = report.get("diff") or {}
+    human = (
+        f"compare status={data.get('status')}\n"
+        f"metrics_delta={diff.get('metrics_delta')}\n"
+        f"scores_delta={diff.get('scores_delta')}"
+    )
+    emit(data, as_json=json_out, human=human)
+    raise typer.Exit(code=int(data.get("exit_code_hint") or 0))
+
+
+@app.command("gate")
+def gate_cmd(
+    baseline_version: Optional[str] = typer.Option(None, "--baseline-version"),
+    candidate_version: Optional[str] = typer.Option(None, "--candidate-version"),
+    baseline_run: Optional[str] = typer.Option(None, "--baseline-run"),
+    candidate_run: Optional[str] = typer.Option(None, "--candidate-run"),
+    baseline_id: Optional[str] = typer.Option(None, "--baseline-id"),
+    policy_id: Optional[str] = typer.Option(
+        None, "--policy-id", help="Registered policy id (default builtin thresholds)"
+    ),
+    policy_version: Optional[str] = typer.Option(None, "--policy-version"),
+    project_id: Optional[str] = typer.Option(None, "--project-id"),
+    api_url: Optional[str] = typer.Option(None, "--api-url"),
+    api_key: Optional[str] = typer.Option(None, "--api-key"),
+    json_out: bool = typer.Option(False, "--json"),
+) -> None:
+    """
+    CI gate: compare candidate to baseline against a threshold policy.
+
+    Exit codes: 0 = pass, 1 = regressions detected, 2 = error.
+    """
+    cfg = resolve_config(api_url=api_url, project_id=project_id, api_key=api_key)
+    try:
+        baseline = _build_ref(
+            version=baseline_version,
+            run_id=baseline_run,
+            baseline_id=baseline_id,
+            allow_baseline_id=True,
+        )
+        candidate = _build_ref(
+            version=candidate_version,
+            run_id=candidate_run,
+            allow_baseline_id=False,
+        )
+    except ValueError as exc:
+        fail(str(exc), as_json=json_out)
+
+    body: dict = {"baseline": baseline, "candidate": candidate}
+    if policy_id:
+        body["policy_id"] = policy_id
+    if policy_version:
+        body["policy_version"] = policy_version
+
+    try:
+        with SentinelClient(cfg) as client:
+            data = client.gate_regression(cfg.project_id, body)
+    except SentinelApiError as exc:
+        emit(
+            {"ok": False, "error": str(exc), "body": exc.body},
+            as_json=True,
+        )
+        raise typer.Exit(code=2) from exc
+    except Exception as exc:  # noqa: BLE001
+        fail(str(exc), as_json=json_out)
+
+    exit_code = int(data.get("exit_code_hint") or (0 if data.get("passed") else 1))
+    gate = ((data.get("report") or {}).get("gate")) or {}
+    violations = gate.get("violations") or []
+    human = (
+        f"gate passed={data.get('passed')} status={data.get('status')} "
+        f"exit={exit_code}\n"
+        f"violations={len(violations)}"
+    )
+    if violations:
+        human += "\n" + "\n".join(
+            f"- {v.get('key')}: {v.get('message')}" for v in violations[:10]
+        )
+    emit(data, as_json=json_out, human=human)
+    raise typer.Exit(code=exit_code)
+
+
+def _build_ref(
+    *,
+    version: str | None = None,
+    run_id: str | None = None,
+    baseline_id: str | None = None,
+    allow_baseline_id: bool = False,
+) -> dict:
+    opts = []
+    if version:
+        opts.append(("version", version))
+    if run_id:
+        opts.append(("run", run_id))
+    if baseline_id:
+        if not allow_baseline_id:
+            raise ValueError("--baseline-id is only valid on the baseline side")
+        opts.append(("baseline", baseline_id))
+    if len(opts) != 1:
+        raise ValueError(
+            "Specify exactly one selector: --*-version, --*-run"
+            + (", or --baseline-id" if allow_baseline_id else "")
+        )
+    kind, value = opts[0]
+    if kind == "baseline":
+        return {"kind": "baseline", "baseline_id": value}
+    if kind == "version":
+        return {"kind": "agent_version", "agent_version": value}
+    return {"kind": "run", "run_id": value}
+
+
 @app.command("serve")
 def serve_cmd(
     json_out: bool = typer.Option(False, "--json"),

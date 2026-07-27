@@ -7,8 +7,8 @@ info:
     Trace payloads MUST conform to `packages/schema/jsonschema/v1`.
 
     **Implementation status:** Ingest, projects, runs, health, quarantine,
-    derived metrics, evaluation, and benchmarking routes are implemented by
-    `apps/server` (Phases 3–8).
+    derived metrics, evaluation, benchmarking, and regression/CI gate routes
+    are implemented by `apps/server`.
   version: 0.1.0
   contact:
     name: Sentinel AI Maintainers
@@ -27,6 +27,7 @@ tags:
   - name: runs
   - name: evals
   - name: benchmarks
+  - name: regressions
 
 paths:
   /healthz:
@@ -644,6 +645,125 @@ paths:
               schema:
                 $ref: "#/components/schemas/BenchmarkJob"
 
+  /v1/projects/{project_id}/regression-policies:
+    get:
+      tags: [regressions]
+      summary: List regression policies
+      operationId: listRegressionPolicies
+      security:
+        - ApiKeyAuth: []
+        - {}
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Policy list
+    post:
+      tags: [regressions]
+      summary: Create a versioned regression policy
+      operationId: createRegressionPolicy
+      security:
+        - ApiKeyAuth: []
+        - {}
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegressionPolicyCreate"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegressionPolicy"
+
+  /v1/projects/{project_id}/baselines:
+    get:
+      tags: [regressions]
+      summary: List pinned baselines
+      operationId: listBaselines
+      security:
+        - ApiKeyAuth: []
+        - {}
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Baseline list
+    post:
+      tags: [regressions]
+      summary: Pin a baseline reference
+      operationId: createBaseline
+      security:
+        - ApiKeyAuth: []
+        - {}
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BaselineCreate"
+      responses:
+        "201":
+          description: Created
+
+  /v1/projects/{project_id}/regressions/compare:
+    post:
+      tags: [regressions]
+      summary: Compare baseline vs candidate (diff only)
+      operationId: compareRegression
+      security:
+        - ApiKeyAuth: []
+        - {}
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegressionRequest"
+      responses:
+        "202":
+          description: Compare job result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegressionJob"
+
+  /v1/projects/{project_id}/regressions/gate:
+    post:
+      tags: [regressions]
+      summary: Gate candidate against baseline thresholds
+      description: |
+        Returns 202 even when the gate fails. Use `passed` and `exit_code_hint`
+        (0 pass, 1 fail, 2 error) for CI.
+      operationId: gateRegression
+      security:
+        - ApiKeyAuth: []
+        - {}
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegressionRequest"
+      responses:
+        "202":
+          description: Gate job result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegressionJob"
+
 components:
   securitySchemes:
     ApiKeyAuth:
@@ -1141,3 +1261,124 @@ components:
         created_at:
           type: string
           format: date-time
+
+    RegressionPolicyCreate:
+      type: object
+      required: [policy_id, version, name]
+      additionalProperties: false
+      properties:
+        policy_id:
+          type: string
+        version:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        definition:
+          type: object
+          additionalProperties: true
+
+    RegressionPolicy:
+      type: object
+      required: [policy_id, version, name, definition]
+      additionalProperties: false
+      properties:
+        policy_id:
+          type: string
+        version:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        definition:
+          type: object
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+
+    BaselineCreate:
+      type: object
+      required: [baseline_id, version, name, reference]
+      additionalProperties: false
+      properties:
+        baseline_id:
+          type: string
+        version:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        reference:
+          type: object
+          additionalProperties: true
+
+    RegressionRequest:
+      type: object
+      required: [baseline, candidate]
+      additionalProperties: false
+      properties:
+        baseline:
+          type: object
+          additionalProperties: true
+        candidate:
+          type: object
+          additionalProperties: true
+        policy_id:
+          type: string
+        policy_version:
+          type: string
+        policy_definition:
+          type: object
+          additionalProperties: true
+
+    RegressionJob:
+      type: object
+      required: [id, status, kind]
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        project_id:
+          type: string
+        kind:
+          type: string
+          enum: [compare, gate]
+        policy_id:
+          type: string
+          nullable: true
+        policy_version:
+          type: string
+          nullable: true
+        baseline_ref:
+          type: object
+          additionalProperties: true
+        candidate_ref:
+          type: object
+          additionalProperties: true
+        status:
+          type: string
+          enum: [queued, running, succeeded, failed]
+        passed:
+          type: boolean
+          nullable: true
+        report:
+          type: object
+          additionalProperties: true
+        error_message:
+          type: string
+          nullable: true
+        exit_code_hint:
+          type: integer
+          description: "0 pass, 1 gate fail, 2 error"
+        created_at:
+          type: string
+          format: date-time
+        finished_at:
+          type: string
+          format: date-time
+          nullable: true

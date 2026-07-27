@@ -90,6 +90,28 @@ class SentinelClient:
     def project_metrics(self, project_id: str) -> dict[str, Any]:
         return self._request("GET", f"/v1/projects/{project_id}/metrics")
 
+    def create_regression_policy(
+        self, project_id: str, body: dict[str, Any]
+    ) -> dict[str, Any]:
+        return self._request(
+            "POST", f"/v1/projects/{project_id}/regression-policies", json=body
+        )
+
+    def create_baseline(self, project_id: str, body: dict[str, Any]) -> dict[str, Any]:
+        return self._request("POST", f"/v1/projects/{project_id}/baselines", json=body)
+
+    def compare_regression(
+        self, project_id: str, body: dict[str, Any]
+    ) -> dict[str, Any]:
+        return self._request(
+            "POST", f"/v1/projects/{project_id}/regressions/compare", json=body
+        )
+
+    def gate_regression(self, project_id: str, body: dict[str, Any]) -> dict[str, Any]:
+        return self._request(
+            "POST", f"/v1/projects/{project_id}/regressions/gate", json=body
+        )
+
 
 def load_batches_from_path(path: Path) -> list[dict[str, Any]]:
     """Load one or more IngestBatch objects from a file or directory."""
